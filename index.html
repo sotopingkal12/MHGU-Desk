@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>MHGU Desk — Senjata, Armor &amp; Drop Rate</title>
-  <meta name="theme-color" content="#f3f1ed" id="meta-theme-color">
+  <meta name="theme-color" content="#fbfaf8" id="meta-theme-color">
 <script>
-/* v12.2: pasang tema tersimpan sebelum cat pertama (tanpa kilatan); belum pernah memilih -> ikuti sistem (gelap = AMOLED) */
-(function(){try{var t=localStorage.getItem('mhgu_guild_theme');if(t==='dark')t='amoled';if(t!=='light'&&t!=='sepia'&&t!=='amoled'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'amoled':'light';}document.documentElement.setAttribute('data-theme',t);var m=document.getElementById('meta-theme-color');if(m)m.setAttribute('content',t==='amoled'?'#000000':(t==='sepia'?'#ede4d3':'#f3f1ed'));}catch(e){}})();
+/* v12.3: pasang tema tersimpan sebelum cat pertama (tanpa kilatan); warna status bar selaras dengan --nav-bg */
+(function(){try{var t=localStorage.getItem('mhgu_guild_theme');if(t==='dark')t='amoled';if(t!=='light'&&t!=='sepia'&&t!=='amoled'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'amoled':'light';}document.documentElement.setAttribute('data-theme',t);var m=document.getElementById('meta-theme-color');if(m)m.setAttribute('content',t==='amoled'?'#0b0d10':(t==='sepia'?'#f7f1e6':'#fbfaf8'));}catch(e){}})();
 </script>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
@@ -20,6 +20,7 @@
 
 /* 1. DESIGN TOKENS (Light · Sepia · AMOLED) */
 :root {
+  color-scheme: light;
   --bg: #f3f1ed;
   --surface: #ffffff;
   --surface-alt: #eae6df;
@@ -72,6 +73,7 @@
 }
 
 :root[data-theme="amoled"] {
+  color-scheme: dark;
   --bg: #000000;
   --surface: #121519;
   --surface-alt: #1b2027;
@@ -115,7 +117,7 @@ body {
   font: 14px/1.5 var(--font-sans);
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .hidden { display: none !important; }
@@ -1591,26 +1593,432 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
 .tree-chip::after, .mat-chip::after, .pt-chip::after, button.sk-pill::after { content: ""; position: absolute; inset: -4px -2px; }
 .hbg-mats-cell .mat-chip::after { inset: -3px -2px; }
 /* v12.2: tombol topbar 44px tetap muat di layar 360px (subjudul tidak terpotong) */
-@media (max-width: 380px) { .topbar-actions { gap: 4px; } .btn-theme { padding: 0 10px; } }
+@media (max-width: 380px) { .topbar-actions { gap: 4px; } .btn-theme { padding: 0 9px; } }
+
+/* ==========================================================================
+   v12.3: Opsi B — Header Ringkas & Minimalis (Merata di Semua 5 Section)
+   Pemisahan zona tegas: App Bar -> Sticky Search -> Tab Kategori -> Quick Chips -> Konten
+   ========================================================================== */
+.topbar {
+  display: block;
+  background: var(--nav-bg);
+  padding: 8px 14px 6px;
+}
+.topbar-inner {
+  width: 100%;
+  max-width: 1032px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.topbar.is-solo,
+.topbar:has(+ #toolbar.hidden) {
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.logo-mark svg {
+  width: 15px;
+  height: 15px;
+}
+.logo {
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+.logo-sub {
+  font-size: 11px;
+  opacity: 0.85;
+}
+.topbar-actions {
+  gap: 6px;
+}
+.topbar .icon-btn {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 700;
+  box-shadow: none;
+  position: relative;
+}
+.topbar .icon-btn::after {
+  content: "";
+  position: absolute;
+  inset: -5px -2px;
+}
+.topbar .btn-refresh {
+  min-width: 40px;
+  width: 40px;
+  height: 34px;
+  padding: 0;
+  font-size: 15px;
+}
+.topbar .btn-lang {
+  min-width: 40px;
+  padding: 0 10px;
+  font-size: 11.5px;
+}
+.topbar .btn-theme {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 11.5px;
+}
+
+/* Zone 2: Sticky Command Bar (Search + Filter) */
+.toolbar {
+  top: 0;
+  z-index: 50;
+  background: var(--nav-bg);
+  padding: calc(4px + env(safe-area-inset-top, 0px)) 14px 8px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+.toolbar .search-row {
+  max-width: 1032px;
+  margin: 0 auto;
+  gap: 7px;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--text-muted);
+  pointer-events: none;
+  opacity: 0.8;
+}
+.search-input {
+  height: 40px;
+  padding: 0 42px 0 36px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--surface-alt);
+  box-shadow: none;
+  font-size: 13.5px;
+}
+.search-input:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.search-clear {
+  width: 44px;
+}
+#btn-filter.icon-btn {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: none;
+  gap: 5px;
+  position: relative;
+}
+#btn-filter.icon-btn::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+}
+#btn-filter .flt-ico {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  opacity: 0.8;
+}
+
+/* Filter Dropdown Drawer (Unified width, no double border, AMOLED-safe) */
+.filter-panel {
+  border-top: 0;
+  border-bottom: 1px solid var(--border-strong);
+  padding: 12px 14px 14px;
+}
+.filter-panel > * {
+  width: 100%;
+  max-width: 1032px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.filter-panel > .dbar {
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* Zone 3: Two-Tier Sub-Controls (Primary Underline Tabs vs Secondary Filter Tags) */
+.sub-controls {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+.sub-controls .chip-row {
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 14px;
+  gap: 2px;
+}
+@media (min-width: 1060px) {
+  .sub-controls .chip-row {
+    padding-left: calc((100% - 1032px) / 2);
+    padding-right: calc((100% - 1032px) / 2);
+  }
+}
+.m-chip {
+  min-height: 44px;
+  padding: 10px 12px 10px;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+  position: relative;
+}
+.sub-controls .chip-row .m-chip:first-child {
+  padding-left: 2px;
+}
+.m-chip.active {
+  background: transparent;
+  color: var(--accent-text);
+  font-weight: 800;
+  border-color: transparent;
+  box-shadow: none;
+}
+:root[data-theme="amoled"] .m-chip.active {
+  color: var(--accent);
+}
+.m-chip.active::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 2.5px;
+  border-radius: 99px;
+  background: var(--accent);
+}
+.sub-controls .chip-row .m-chip:first-child.active::before {
+  left: 0;
+}
+
+/* Tier 2: Secondary Quick Filter Tags (lightweight, clearly below header chrome) */
+.sub-controls .pill-strip {
+  max-width: 1060px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 8px 14px 7px;
+  gap: 6px;
+  align-items: center;
+}
+.pill-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border-strong);
+  flex: none;
+  margin: 0 2px;
+}
+.q-pill {
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  box-shadow: none;
+  position: relative;
+}
+.q-pill::after {
+  content: "";
+  position: absolute;
+  inset: -7px -2px;
+}
+.q-pill.active {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  border-color: var(--accent);
+  font-weight: 700;
+  box-shadow: none;
+}
+:root[data-theme="amoled"] .sub-controls .q-pill.active {
+  color: var(--accent);
+}
+.filter-panel .q-pill {
+  min-height: 38px;
+  padding: 6px 12px;
+  background: var(--surface-alt);
+  border-color: var(--border);
+}
+.filter-panel .q-pill::after {
+  inset: -3px -2px;
+}
+.filter-panel .q-pill.active,
+:root[data-theme="amoled"] .filter-panel .q-pill.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
+
+/* Zone 4: Compact Status & Action Strip (Merata di semua 5 view) */
+.main-wrap {
+  margin-top: 8px;
+}
+#sub-controls.hidden + .main-wrap {
+  margin-top: 12px;
+}
+.status-strip {
+  margin-bottom: 10px;
+  padding: 2px 2px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  gap: 6px 10px;
+}
+.status-strip > span:last-child {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+.status-strip .act-btn {
+  min-height: 36px;
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+.status-strip .act-btn.primary {
+  box-shadow: none;
+}
+.status-strip .act-btn::after {
+  inset: -4px -2px;
+}
+.status-strip .link-btn {
+  min-height: 36px;
+  padding: 6px 6px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+}
+.status-strip .link-btn::after {
+  inset: -4px -2px;
+}
+.link-btn.danger {
+  color: var(--danger);
+}
+.status-strip .ig-submode {
+  gap: 6px;
+}
+.status-strip .ig-submode .q-pill {
+  min-height: 34px;
+  padding: 4px 10px;
+}
+.status-strip .ig-submode .q-pill::after {
+  inset: -4px -1px;
+}
+
+/* Section-specific Opsi B consistency: Build, Panduan, Compare Tray */
+.build-cls-bar {
+  padding: 3px;
+  background: var(--surface-alt);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  gap: 4px;
+}
+.build-cls-btn {
+  min-height: 38px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.build-cls-btn.active {
+  background: var(--surface);
+  color: var(--accent-text);
+  border-color: transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+:root[data-theme="amoled"] .build-cls-btn.active {
+  color: var(--accent);
+}
+.preset-bar .act-btn {
+  min-height: 34px;
+  padding: 5px 11px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+.preset-bar .act-btn::after {
+  inset: -5px -2px;
+}
+.crs-hero {
+  border: 1px solid var(--border);
+  box-shadow: none;
+  padding: 11px 13px;
+}
+#hbg-compare-tray {
+  border: 1px solid var(--accent) !important;
+  box-shadow: none;
+}
+#hbg-compare-tray .act-btn {
+  min-height: 34px;
+  padding: 4px 12px;
+  font-size: 12px;
+  box-shadow: none;
+}
+
+/* Mobile polish & iOS Safari anti-zoom */
+@media (max-width: 720px) {
+  .search-input, .ctrl-select {
+    font-size: 16px;
+  }
+}
+@media (max-width: 420px) {
+  .topbar { padding: 8px 10px 6px; }
+  .toolbar { padding: calc(4px + env(safe-area-inset-top, 0px)) 10px 8px; }
+  .filter-panel { padding: 10px 10px 12px; }
+  .sub-controls .chip-row { padding: 0 10px; }
+  .sub-controls .pill-strip { padding: 8px 10px 7px; }
+  .topbar-actions { gap: 4px; }
+  .topbar .btn-theme { padding: 0 9px; font-size: 11px; }
+}
 </style>
 </head>
 <body>
 <header class="topbar">
-  <div class="logo-wrap">
-    <div class="logo-mark" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><path d="M12 2.5V6M12 18V21.5M2.5 12H6M18 12H21.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
+  <div class="topbar-inner">
+    <div class="logo-wrap">
+      <div class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><path d="M12 2.5V6M12 18V21.5M2.5 12H6M18 12H21.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="logo-text"><b class="logo">MHGU Desk</b><span class="logo-sub">Senjata · Armor · Build</span></div>
     </div>
-    <div class="logo-text"><b class="logo">MHGU Desk</b><span class="logo-sub">Senjata · Armor · Build</span></div>
+    <div class="topbar-actions"><button id="btn-lang-toggle" type="button" class="icon-btn btn-lang" onclick="toggleAppLang()" aria-label="Ganti bahasa" title="Bahasa / Language">ID</button><button type="button" class="icon-btn btn-refresh" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App">↻</button><button id="btn-theme-toggle" type="button" class="icon-btn btn-theme" onclick="toggleGuildTheme()" aria-label="Ganti tema">☀ Terang</button></div>
   </div>
-  <div class="topbar-actions"><button id="btn-lang-toggle" type="button" class="icon-btn btn-lang" onclick="toggleAppLang()" aria-label="Ganti bahasa" title="Bahasa / Language">ID</button><button type="button" class="icon-btn btn-refresh" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App">↻</button><button id="btn-theme-toggle" type="button" class="icon-btn btn-theme" onclick="toggleGuildTheme()" aria-label="Ganti tema">☀ Terang</button></div>
 </header>
 <div id="toolbar" class="toolbar">
   <div class="search-row">
     <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="global-search" type="text" enterkeyhint="search" autocomplete="off" oninput="handleGlobalSearch()" placeholder="Cari armor, senjata, skill, bahan…" class="search-input">
-      <button id="btn-clear-search" type="button" onclick="clearGlobalSearch()" class="search-clear" aria-label="Hapus">✕</button>
+      <button id="btn-clear-search" type="button" onclick="clearGlobalSearch()" class="search-clear" aria-label="Bersihkan pencarian">✕</button>
     </div>
-    <button id="btn-filter" type="button" class="icon-btn" onclick="toggleFilterPanel()">Filter<em id="filter-badge"></em></button>
+    <button id="btn-filter" type="button" class="icon-btn" onclick="toggleFilterPanel()"><svg class="flt-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span>Filter</span><em id="filter-badge"></em></button>
   </div>
 <div id="filter-panel" class="filter-panel hidden"><div id="rare-pill-bar" class="pill-strip"></div>
 <!-- Armor Contextual Controls -->
@@ -1859,7 +2267,7 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
           </select>
         </div>
 
-        <div id="ctrl-group-items" class="ctrl-group hidden">
+        <div id="ctrl-group-items" class="fgrid hidden">
           <select id="item-cat-filter" onchange="filtersChanged()" class="ctrl-select">
             <option value="all">Semua Sumber (2.906)</option>
             <option value="craft">Hanya Material Craft (Armor/HBG)</option>
@@ -1885,13 +2293,13 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
   <div id="quick-pill-bar" class="pill-strip"></div>
 </div>
 <main class="main-wrap">
-<section id="view-armor" class="hidden"><div class="status-strip"><span id="armor-result-count"></span><span><button type="button" class="act-btn primary" onclick="openSF()">Cari skill</button> <button type="button" class="link-btn" onclick="resetAllFilters()">Reset filter</button></span></div><div id="armor-catalog-container" class="list-stack"></div></section>
+<section id="view-armor" class="hidden"><div class="status-strip"><span id="armor-result-count"></span><span><button type="button" class="act-btn primary" onclick="openSF()">Cari skill</button><button type="button" class="link-btn" onclick="resetAllFilters()">Reset filter</button></span></div><div id="armor-catalog-container" class="list-stack"></div></section>
 <section id="view-hbg"><div class="status-strip"><span id="hbg-result-count"></span><span id="weapon-status-actions"><button type="button" class="link-btn" onclick="toggleAllHbgDetails()">Buka/Tutup Detail LV</button><button type="button" class="link-btn" onclick="expandAllWeaponTrees(true)">Buka cabang</button><button type="button" class="link-btn" onclick="expandAllWeaponTrees(false)">Tutup cabang</button></span></div>
 <div id="hbg-compare-tray" class="card-box hidden" style="margin-bottom:10px;border:2px solid var(--accent)"><div class="dbar" style="justify-content:space-between;align-items:center"><strong style="color:var(--text)">⚖ Perbandingan Senjata</strong><button type="button" onclick="clearHbgCompare()" class="act-btn primary">Tutup</button></div><div id="hbg-compare-grid" class="sim-grid"></div></div>
 <div id="hbg-catalog-container" class="list-stack"></div></section>
-<section id="view-items" class="hidden"><div class="status-strip"><span id="item-result-count"></span><button type="button" class="link-btn" onclick="resetAllFilters()">Reset filter</button></div><div id="items-catalog-container" class="list-stack"></div></section>
-<section id="view-build" class="hidden"><div class="card-box" style="margin-bottom:10px"><div class="build-cls-bar"><button id="bcls-B" type="button" class="build-cls-btn" onclick="setBuildClass('Blademaster')">Blademaster</button><button id="bcls-G" type="button" class="build-cls-btn active" onclick="setBuildClass('Gunner')">Gunner</button></div><div class="sub">Aturan MHGU: slot Head bebas lintas kelas (BM/GN), sedangkan Chest–Legs mengikuti mode kelas aktif.</div><div id="dock-live-summary" style="margin:4px 0 8px"></div>
-<div class="dbar" style="margin:0;align-items:center"><span class="sub">Preset:</span><button type="button" class="act-btn" onclick="loadPresetMixSet('bujabujabu')">LR BuJa</button><button type="button" class="act-btn" onclick="loadPresetMixSet('silversol')">Silver Sol Z</button><button type="button" class="act-btn" onclick="loadPresetMixSet('neset')">Neset</button><button type="button" class="act-btn primary" onclick="openSF()">Isi dari skill</button></div></div>
+<section id="view-items" class="hidden"><div class="status-strip"><span id="item-result-count"></span><span id="items-status-actions"><button type="button" class="link-btn" onclick="resetAllFilters()">Reset filter</button></span></div><div id="items-catalog-container" class="list-stack"></div></section>
+<section id="view-build" class="hidden"><div class="status-strip"><span>Build Simulator · EFR &amp; Skill Aktif</span><span><button type="button" class="act-btn primary" onclick="openSF()">Isi dari skill</button></span></div><div class="card-box" style="margin-bottom:10px"><div class="build-cls-bar"><button id="bcls-B" type="button" class="build-cls-btn" onclick="setBuildClass('Blademaster')">Blademaster</button><button id="bcls-G" type="button" class="build-cls-btn active" onclick="setBuildClass('Gunner')">Gunner</button></div><div class="sub">Aturan MHGU: slot Head bebas lintas kelas (BM/GN), sedangkan Chest–Legs mengikuti mode kelas aktif.</div><div id="dock-live-summary" style="margin:4px 0 8px"></div>
+<div class="dbar preset-bar" style="margin:0;align-items:center"><span class="sub">Preset:</span><button type="button" class="act-btn" onclick="loadPresetMixSet('bujabujabu')">LR BuJa</button><button type="button" class="act-btn" onclick="loadPresetMixSet('silversol')">Silver Sol Z</button><button type="button" class="act-btn" onclick="loadPresetMixSet('neset')">Neset</button></div></div>
 <div class="card-box" style="margin-bottom:10px"><b>Build tersimpan</b><div class="sub">Build terakhir otomatis tersimpan. Beri nama untuk menyimpan beberapa versi.</div>
 <div class="dbar" style="margin:8px 0"><input id="build-name" class="ctrl-select" style="flex:1;min-width:150px" placeholder="Nama build, mis. Silver Sol Pierce"><button type="button" class="act-btn primary" onclick="saveBuildAs()">Simpan</button><button type="button" class="act-btn" onclick="copyBuild()">Salin</button></div><div id="saved-builds" class="list-stack"></div></div>
 <div class="sim-grid">
@@ -1925,7 +2333,7 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
         </div>
       </div>
 </section>
-<section id="view-wishlist" class="hidden"><div class="status-strip"><span>Target farming &amp; equipment yang di-pin</span><span><button type="button" class="link-btn" onclick="openBackup()">Backup</button><button type="button" class="link-btn" onclick="copyPlan()">Salin daftar</button><button type="button" class="link-btn" onclick="clearAllWishlist()">Hapus semua</button></span></div><div id="wishlist-container" class="list-stack"></div></section>
+<section id="view-wishlist" class="hidden"><div class="status-strip"><span id="wishlist-status-count">Target farming &amp; equipment yang di-pin</span><span><button type="button" class="link-btn" onclick="openBackup()">Backup</button><button type="button" class="link-btn" onclick="copyPlan()">Salin daftar</button><button type="button" class="link-btn danger" onclick="clearAllWishlist()">Hapus semua</button></span></div><div id="wishlist-container" class="list-stack"></div></section>
 </main>
 <div id="material-lookup-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeMaterialModal()"><div class="modal-box"><div class="sheet-handle"></div><div class="modal-head"><div><span class="offline-pill">Lokasi &amp; drop rate</span><h3 id="mat-modal-title" style="font:700 16px var(--font-sans);color:var(--text);margin-top:4px"></h3></div><button type="button" onclick="closeMaterialModal()" class="act-btn primary">✕</button></div><div id="mat-modal-body"></div></div></div>
 <div id="sf-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeSF()"><div class="modal-box"><div class="modal-head"><b style="font:700 16px var(--font-sans);color:var(--text)">Cari kombinasi skill</b><button type="button" onclick="closeSF()" class="act-btn primary">✕</button></div>
@@ -2866,10 +3274,13 @@ function selectWeaponType(wt){
   $('ctrl-group-lbg').classList.toggle('hidden',wt!=='lbg');
   $('ctrl-group-bow').classList.toggle('hidden',wt!=='bow');
   $('ctrl-group-ig').classList.toggle('hidden',wt!=='ig');$('ctrl-group-cb').classList.toggle('hidden',wt!=='cb');$('ctrl-group-ham').classList.toggle('hidden',wt!=='ham');
+  $('filter-panel').classList.add('hidden');
   renderQuickPillBar();
   renderHbgSection();
  });
 }
+function selectQuickHbgSiege(val){$('hbg-siege-filter').value=val;renderQuickPillBar();renderHbgSection();}
+function selectQuickLbgRf(val){$('lbg-rf-filter').value=val;renderQuickPillBar();renderHbgSection();}
 function setLbgViewMode(m){lbgViewMode=m;renderHbgSection();}
 function setBowViewMode(m){bowViewMode=m;renderHbgSection();}
 function selectQuickLbgRare(r){selectedLbgRare=r;renderQuickPillBar();renderHbgSection();}
@@ -3083,8 +3494,12 @@ function selectInfoSub(sub){
   activeInfoSub=sub;
   $('ctrl-group-items').classList.toggle('hidden',sub!=='bahan');
   $('ctrl-group-monster').classList.toggle('hidden',sub!=='monster');
+  $('btn-filter').classList.toggle('hidden',sub==='panduan');
+  var isa=$('items-status-actions');if(isa)isa.classList.toggle('hidden',sub==='panduan');
+  $('filter-panel').classList.add('hidden');
   renderQuickPillBar();
   renderItemsCatalog();
+  updateFilterBadge();
  });
 }
 function selectQuickMonSize(s){selectedMonSize=s;$('mon-size-filter').value=s;renderQuickPillBar();renderItemsCatalog();}
@@ -3433,7 +3848,7 @@ function renderGuidesCatalog(){
  $('items-catalog-container').innerHTML=hero+(bodyHtml||emptyMsg('Tidak ada materi yang cocok dengan kata kunci.'));
 }
 function setIgViewMode(m){igViewMode=m;renderHbgSection();}
-function setIgSubMode(m){igSubMode=m;renderHbgSection();}
+function setIgSubMode(m){igSubMode=m;renderQuickPillBar();renderHbgSection();}
 function selectQuickIgRare(r){selectedIgRare=r;renderQuickPillBar();renderHbgSection();}
 function selectQuickIgElem(el){$('ig-elem-filter').value=el;renderQuickPillBar();renderHbgSection();}
 function fmtIgAff(aff,ac){
@@ -3987,6 +4402,8 @@ function renderHamSection(){
       selectedLbgRare = 'all';
       selectedBowRare = 'all';
       selectedIgRare = 'all';
+      selectedCbRare = 'all';
+      selectedHamRare = 'all';
       selectedItemSrc = 'all';
       selectedMonSize = 'large';
       selectedMonWeak = 'all';
@@ -3996,7 +4413,10 @@ function renderHamSection(){
       lbgViewMode = 'tree';
       bowViewMode = 'tree';
       igViewMode = 'tree';
+      cbViewMode = 'tree';
+      hamViewMode = 'tree';
       armorShown = 40;
+      monShown = 30;
       itemsShown = 50;
       document.getElementById('armor-type-filter').value = 'all';
       document.getElementById('armor-slot-filter').value = '0';
@@ -4018,6 +4438,8 @@ function renderHamSection(){
       document.getElementById('bow-charge-filter').value = 'all';
       document.getElementById('bow-arc-filter').value = 'all';
       document.getElementById('bow-sort').value = 'tree';
+      ['cb-view-select','ham-view-select','cb-sort','ham-sort'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='tree';});
+      ['cb-phial-filter','cb-elem-filter','cb-sharp-filter','ham-elem-filter','ham-sharp-filter'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='all';});
       document.getElementById('mon-size-filter').value = 'large';
       document.getElementById('mon-weak-filter').value = 'all';
       document.getElementById('mon-sort').value = 'default';
@@ -4042,8 +4464,8 @@ const esc=escapeHtml;
 function showToast(msg){var el=$('guild-toast');var m=(typeof appLang!=='undefined'&&appLang==='en')?translateStrEn(msg):msg;el.dataset.go=/Build/.test(m)?'1':'';el.textContent=m+(el.dataset.go?(appLang==='en'?' · tap to view':' · ketuk untuk lihat'):'');el.classList.remove('hidden');clearTimeout(window._tt);window._tt=setTimeout(function(){el.classList.add('hidden');},3200);}
 function save(k,s){try{localStorage.setItem(k,JSON.stringify(Array.from(s)));}catch(e){}}
 var THEMES=['light','sepia','amoled'],THEME_LBL={light:'☀ Terang',sepia:'📜 Hangat',amoled:'🌙 AMOLED'};
-function applyTheme(t){var r=document.documentElement;var cur=t||r.dataset.theme||'light';if(cur==='dark')cur='amoled';if(THEMES.indexOf(cur)===-1)cur='light';r.dataset.theme=cur;var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',cur==='amoled'?'#000000':(cur==='sepia'?'#ede4d3':'#f3f1ed'));$('btn-theme-toggle').textContent=(typeof appLang!=='undefined'&&appLang==='en'?THEME_LBL_EN:THEME_LBL)[cur];return cur;}
-function toggleGuildTheme(){haptic(8);var cur=applyTheme(),nxt=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length];applyTheme(nxt);try{localStorage.setItem('mhgu_guild_theme',nxt);}catch(e){}showToast('Tema diubah ke '+THEME_LBL[nxt]);}
+function applyTheme(t){var r=document.documentElement;var cur=t||r.dataset.theme||'light';if(cur==='dark')cur='amoled';if(THEMES.indexOf(cur)===-1)cur='light';r.dataset.theme=cur;var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',cur==='amoled'?'#0b0d10':(cur==='sepia'?'#f7f1e6':'#fbfaf8'));$('btn-theme-toggle').textContent=(typeof appLang!=='undefined'&&appLang==='en'?THEME_LBL_EN:THEME_LBL)[cur];return cur;}
+function toggleGuildTheme(){haptic(8);var cur=applyTheme(),nxt=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length];applyTheme(nxt);try{localStorage.setItem('mhgu_guild_theme',nxt);}catch(e){}showToast('Tema diubah ke '+(typeof appLang!=='undefined'&&appLang==='en'?THEME_LBL_EN:THEME_LBL)[nxt]);}
 function loadPersistedState(){try{var w=JSON.parse(localStorage.getItem('mhgu_guild_wishlist')||'[]');if(Array.isArray(w))wishlistIds=new Set(w);var m=JSON.parse(localStorage.getItem('mhgu_guild_matdone')||'[]');if(Array.isArray(m))matDone=new Set(m);var t=localStorage.getItem('mhgu_guild_theme');if(t)document.documentElement.dataset.theme=t;var lg=localStorage.getItem('mhgu_guild_lang');if(lg==='en'||lg==='id')appLang=lg;var bc=localStorage.getItem('mhgu_build_class');if(bc==='Blademaster'||bc==='Gunner')buildClass=bc;}catch(e){}applyTheme();updateWishlistBadges();}
 function updateWishlistBadges(){$('wishlist-count-top').textContent=wishlistIds.size||'';}
 function hayA(a){return a._h||(a._h=(a.name+' '+a.hunterClass+' '+a.skills+' '+a.mats+' '+a.pieces.map(function(p){return p.name+' '+p.skills+' '+(p.scrap||[]).join(' ');}).join(' ')).toLowerCase());}
@@ -4136,8 +4558,12 @@ function switchMainView(v,noTrans){
   currentView=v;
   if(v==='build')ensureSimulatorReady();
   VIEWS.forEach(function(x){$('view-'+x).classList.toggle('hidden',x!==v);$('nav-tab-'+x).classList.toggle('active',x===v);});
-  $('toolbar').classList.toggle('hidden',v==='build'||v==='wishlist');
-  $('sub-controls').classList.toggle('hidden',v==='build'||v==='wishlist');
+  var isSolo=(v==='build'||v==='wishlist');
+  var tbEl=document.querySelector('.topbar');if(tbEl)tbEl.classList.toggle('is-solo',isSolo);
+  $('toolbar').classList.toggle('hidden',isSolo);
+  $('sub-controls').classList.toggle('hidden',isSolo);
+  $('btn-filter').classList.toggle('hidden',v==='items'&&activeInfoSub==='panduan');
+  var isa=$('items-status-actions');if(isa)isa.classList.toggle('hidden',v==='items'&&activeInfoSub==='panduan');
   $('ctrl-group-armor').classList.toggle('hidden',v!=='armor');
   $('ctrl-group-items').classList.toggle('hidden',!(v==='items'&&activeInfoSub==='bahan'));
   $('ctrl-group-monster').classList.toggle('hidden',!(v==='items'&&activeInfoSub==='monster'));
@@ -4165,7 +4591,7 @@ function updateTabCounts(){var q=$('global-search').value.trim().toLowerCase(),c
 function updateFilterBadge(){var v=function(i){return $(i).value;},n=0;
  if(currentView==='armor')n=(selectedArmorRare!=='all')+(v('armor-type-filter')!=='all')+(v('armor-slot-filter')!=='0')+(v('armor-sort-filter')!=='default')+(v('armor-gender-filter')!=='all');
  else if(currentView==='hbg'){if(activeWeaponType==='hbg')n=(selectedHbgRare!=='all')+(v('hbg-siege-filter')!=='all')+(v('hbg-sort')!=='tree');else if(activeWeaponType==='lbg')n=(selectedLbgRare!=='all')+(v('lbg-rf-filter')!=='all')+(v('lbg-sort')!=='tree');else if(activeWeaponType==='bow')n=(selectedBowRare!=='all')+(v('bow-elem-filter')!=='all')+(v('bow-charge-filter')!=='all')+(v('bow-arc-filter')!=='all')+(v('bow-sort')!=='tree');else if(activeWeaponType==='cb')n=(selectedCbRare!=='all')+(v('cb-phial-filter')!=='all')+(v('cb-elem-filter')!=='all')+(v('cb-sharp-filter')!=='all')+(v('cb-sort')!=='tree');else if(activeWeaponType==='ham')n=(selectedHamRare!=='all')+(v('ham-elem-filter')!=='all')+(v('ham-sharp-filter')!=='all')+(v('ham-sort')!=='tree');else n=(selectedIgRare!=='all')+(v('ig-elem-filter')!=='all')+(v('ig-sharp-filter')!=='all')+(v('ig-kinsect-filter')!=='all')+(v('ig-sort')!=='tree');}
- else if(currentView==='items'){if(activeInfoSub==='monster')n=(v('mon-size-filter')!=='large')+(v('mon-weak-filter')!=='all')+(v('mon-sort')!=='default');else n=(v('item-cat-filter')!=='all')+(v('item-rank-filter')!=='all');}
+ else if(currentView==='items'){if(activeInfoSub==='monster')n=(v('mon-size-filter')!=='large')+(v('mon-weak-filter')!=='all')+(v('mon-sort')!=='default');else if(activeInfoSub==='bahan')n=(v('item-cat-filter')!=='all')+(v('item-rank-filter')!=='all');}
  $('filter-badge').textContent=n||'';}
 function rp(fn,val,label,on){return '<button type="button" class="q-pill'+(on?' active':'')+'" onclick="'+fn+'(\''+val+'\')">'+label+'</button>';}
 function rn(r){return r==='Rare X'?11:parseInt(r.replace('Rare ',''),10);}
@@ -4198,10 +4624,16 @@ function renderQuickPillBar(){var h='',q='',c={};
    HBG_DATA.forEach(function(w){c[w.rare]=(c[w.rare]||0)+1;});
    h=rp('selectQuickHbgRare','all','Semua',selectedHbgRare==='all');
    Object.keys(c).sort(function(a,b){return rn(a)-rn(b);}).forEach(function(r){h+=rp('selectQuickHbgRare',r,r.replace('Rare ','R')+' ('+c[r]+')',selectedHbgRare===r);});
+   var qhbg=[['all','Semua Siege'],['Pierce S Lv1','Pierce 1'],['Pierce S Lv2','Pierce 2'],['Pierce S Lv3','Pierce 3'],['Normal S Lv2','Normal 2'],['Normal S Lv3','Normal 3'],['Pellet S','Pellet'],['Crag S','Crag/Clust'],['Slicing S','Slicing'],['Flaming S','Elemen']];
+   var curSg=$('hbg-siege-filter').value;
+   qhbg.forEach(function(x){q+=rp('selectQuickHbgSiege',x[0],x[1],curSg===x[0]);});
   }else if(activeWeaponType==='lbg'){
    LBG_DATA.forEach(function(w){c[w.rare]=(c[w.rare]||0)+1;});
    h=rp('selectQuickLbgRare','all','Semua',selectedLbgRare==='all');
    Object.keys(c).sort(function(a,b){return rn(a)-rn(b);}).forEach(function(r){h+=rp('selectQuickLbgRare',r,r.replace('Rare ','R')+' ('+c[r]+')',selectedLbgRare===r);});
+   var qlbg=[['all','Semua RF'],['Pierce','RF Pierce'],['Normal','RF Normal'],['Elemental','RF Elemen'],['Status','RF Status'],['Explosive','RF Explosive']];
+   var curRf=$('lbg-rf-filter').value;
+   qlbg.forEach(function(x){q+=rp('selectQuickLbgRf',x[0],x[1],curRf===x[0]);});
   }else if(activeWeaponType==='bow'){
    BOW_DATA.forEach(function(w){c[w.rare]=(c[w.rare]||0)+1;});
    h=rp('selectQuickBowRare','all','Semua',selectedBowRare==='all');
@@ -4214,7 +4646,7 @@ function renderQuickPillBar(){var h='',q='',c={};
     h=rp('selectQuickCbRare','all','Semua',selectedCbRare==='all');
     Object.keys(c).sort(function(a,b){return rn(a)-rn(b);}).forEach(function(r){h+=rp('selectQuickCbRare',r,r.replace('Rare ','R')+' ('+c[r]+')',selectedCbRare===r);});
     var curPh=$('cb-phial-filter').value;
-    q+=rp('selectQuickCbPhial','all','Semua Phial',curPh==='all')+rp('selectQuickCbPhial','Impact','Impact Phial',curPh==='Impact')+rp('selectQuickCbPhial','Element','Element Phial',curPh==='Element');
+    q+=rp('selectQuickCbPhial','all','Semua Phial',curPh==='all')+rp('selectQuickCbPhial','Impact','Impact Phial',curPh==='Impact')+rp('selectQuickCbPhial','Element','Element Phial',curPh==='Element')+'<span class="pill-sep" aria-hidden="true"></span>';
     var qcb=[['all','Semua'],['Fire','Fire'],['Water','Water'],['Thunder','Thunder'],['Ice','Ice'],['Dragon','Dragon'],['Blast','Blast'],['Paralysis','Para'],['Poison','Poison'],['Sleep','Sleep'],['none','Raw']];
     var curCbEl=$('cb-elem-filter').value;
     qcb.forEach(function(x){q+=rp('selectQuickCbElem',x[0],x[1],curCbEl===x[0]);});
@@ -4229,19 +4661,20 @@ function renderQuickPillBar(){var h='',q='',c={};
    IG_DATA.forEach(function(w){c[w.rare]=(c[w.rare]||0)+1;});
    h=rp('selectQuickIgRare','all','Semua',selectedIgRare==='all');
    Object.keys(c).sort(function(a,b){return rn(a)-rn(b);}).forEach(function(r){h+=rp('selectQuickIgRare',r,r.replace('Rare ','R')+' ('+c[r]+')',selectedIgRare===r);});
-   var qig=[['all','Semua'],['Fire','Fire'],['Water','Water'],['Thunder','Thunder'],['Ice','Ice'],['Dragon','Dragon'],['Blast','Blast'],['Paralysis','Para'],['Poison','Poison'],['Sleep','Sleep'],['none','Raw']];
+   if(igSubMode!=='kinsect'){var qig=[['all','Semua'],['Fire','Fire'],['Water','Water'],['Thunder','Thunder'],['Ice','Ice'],['Dragon','Dragon'],['Blast','Blast'],['Paralysis','Para'],['Poison','Poison'],['Sleep','Sleep'],['none','Raw']];
    var curEl=$('ig-elem-filter').value;
-   qig.forEach(function(x){q+=rp('selectQuickIgElem',x[0],x[1],curEl===x[0]);});
+   qig.forEach(function(x){q+=rp('selectQuickIgElem',x[0],x[1],curEl===x[0]);});}
   }
  }else if(currentView==='items'){
   $('info-switcher-bar').innerHTML=
-   '<button type="button" class="m-chip'+(activeInfoSub==='monster'?' active':'')+'" onclick="selectInfoSub(\'monster\')">🐾 Monster ('+MONSTER_DATA.length+')</button>'+
-   '<button type="button" class="m-chip'+(activeInfoSub==='bahan'?' active':'')+'" onclick="selectInfoSub(\'bahan\')">💎 Bahan ('+ITEMS_DATA.length+')</button>'+
-   '<button type="button" class="m-chip'+(activeInfoSub==='panduan'?' active':'')+'" onclick="selectInfoSub(\'panduan\')">📖 Panduan ('+GUIDES_DATA.length+')</button>';
+   '<button type="button" class="m-chip'+(activeInfoSub==='monster'?' active':'')+'" onclick="selectInfoSub(\'monster\')">Monster ('+MONSTER_DATA.length+')</button>'+
+   '<button type="button" class="m-chip'+(activeInfoSub==='bahan'?' active':'')+'" onclick="selectInfoSub(\'bahan\')">Bahan ('+ITEMS_DATA.length+')</button>'+
+   '<button type="button" class="m-chip'+(activeInfoSub==='panduan'?' active':'')+'" onclick="selectInfoSub(\'panduan\')">Panduan ('+GUIDES_DATA.length+')</button>';
   if(activeInfoSub==='monster'){
    q+=rp('selectQuickMonSize','large','Large (94)',selectedMonSize==='large');
    q+=rp('selectQuickMonSize','small','Small (36)',selectedMonSize==='small');
    q+=rp('selectQuickMonSize','all','Semua',selectedMonSize==='all');
+   q+='<span class="pill-sep" aria-hidden="true"></span>';
    [['fire','Lemah Fire'],['water','Lemah Water'],['thunder','Lemah Thunder'],['ice','Lemah Ice'],['dragon','Lemah Dragon']].forEach(function(x){
     q+=rp('selectQuickMonWeak',x[0],x[1],selectedMonWeak===x[0]);
    });
@@ -4670,6 +5103,7 @@ function toggleWishlistItem(id){haptic(12);var on=!wishlistIds.has(id);if(on)wis
  document.querySelectorAll('[data-act="pin"][data-id="'+id+'"]').forEach(function(b){b.textContent=on?'★':'☆';b.classList.toggle('pinned',on);});
  showToast(on?'Di-pin':'Pin dihapus');if(currentView==='wishlist')renderWishlistView();}
 function renderWishlistView(){var c=$('wishlist-container'),rows='',mats={},totalZ=0;
+ var wc=$('wishlist-status-count');if(wc)wc.textContent=wishlistIds.size?(wishlistIds.size+' item di-pin · Target farming'):'Belum ada item di-pin';
  if(!wishlistIds.size){c.innerHTML=emptyMsg('Belum ada Pin. Ketuk ☆ pada armor, senjata, atau bahan — daftar bahan farming-nya otomatis dirangkum di sini.');return;}
  function addM(s,n){splitMats(s).forEach(function(m){
   var cleanM=m.replace(/^\[Key\]\s*/i,'').trim();
@@ -4805,7 +5239,7 @@ window.addEventListener('DOMContentLoaded',async function(){
 });
 
 /* === PWA Service Worker & 1-Tap In-App Auto-Update (v10.0 Network-First) === */
-var MHGU_APP_VERSION='v12.2',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
+var MHGU_APP_VERSION='v12.3',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
 function showPwaUpdateBanner(sw){
  _pwaWaiting=sw;
  var b=$('pwa-update-banner');
@@ -4880,6 +5314,14 @@ var I18N_EXACT = {
   'Senjata · Armor · Build': 'Weapons · Armor · Build',
   'Senjata': 'Weapons',
   'Filter': 'Filter',
+  'Bersihkan pencarian': 'Clear search',
+  'Build Simulator · EFR & Skill Aktif': 'Build Simulator · EFR & Active Skills',
+  'Belum ada item di-pin': 'No pinned items yet',
+  'Semua Siege': 'All Siege',
+  'Semua RF': 'All RF',
+  'Semua Phial': 'All Phials',
+  'RF Elemen': 'RF Element',
+  'Elemen': 'Element',
   'Reset': 'Reset',
   'Selesai': 'Done',
   'Tutup': 'Close',
@@ -5044,6 +5486,13 @@ function translateStrEn(s) {
   out = out.replace(/^Bahan\s*\((\d+)\)$/, 'Items ($1)');
   out = out.replace(/^💎\s*Bahan\s*\((\d+)\)$/, '💎 Items ($1)');
   out = out.replace(/^📖\s*Panduan\s*\((\d+)\)$/, '📖 Guides ($1)');
+  out = out.replace(/^Panduan\s*\((\d+)\)$/, 'Guides ($1)');
+  out = out.replace(/^Semua Bab\s*\((\d+)\)$/, 'All Chapters ($1)');
+  out = out.replace(/^Bab\s*(\d+):\s*(.+)$/, 'Ch. $1: $2');
+  out = out.replace(/^🎓\s*Ujian\s*\((\d+)\s*Soal\)$/, '🎓 Exam ($1 Qs)');
+  out = out.replace(/^Ujian Akhir MHGU:\s*(\d+)\/(\d+)\s*terjawab$/, 'MHGU Final Exam: $1/$2 answered');
+  out = out.replace(/^Kurikulum MHGU:\s*(\d+)\s*dari\s*(\d+)\s*sub-materi\s*·\s*(\d+)\s*dipahami$/, 'MHGU Curriculum: $1 of $2 topics · $3 completed');
+  out = out.replace(/^(\d+)\s*item di-pin\s*·\s*Target farming$/, '$1 pinned items · Farming targets');
   out = out.replace(/^Lainnya\s*\((\d+)\)$/, 'Other ($1)');
   out = out.replace(/^Pohon IG\s*\((\d+)\)$/, 'IG Trees ($1)');
   out = out.replace(/^Katalog Kinsect\s*\((\d+)\)$/, 'Kinsect Catalog ($1)');
@@ -5246,6 +5695,7 @@ function setAppLang(lang, silent) {
   if (!$('sf-modal').classList.contains('hidden')) renderSF();
   if (!$('picker-modal').classList.contains('hidden')) renderPicker();
   if (appLang === 'en') {
+    translateDomTree($('rare-pill-bar'));
     translateDomTree($('sub-controls'));
     translateDomTree(document.querySelector('main'));
     startI18nObserver();
@@ -5266,6 +5716,7 @@ function toggleAppLang() {
   setTimeout(function() {
     applyStaticLang();
     if (appLang === 'en') {
+      translateDomTree($('rare-pill-bar'));
       translateDomTree($('sub-controls'));
       translateDomTree(document.querySelector('main'));
       startI18nObserver();
