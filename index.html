@@ -294,6 +294,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .btn-refresh { width: 36px; height: 36px; padding: 0; font-size: 16px; }
 .btn-theme { height: 36px; padding: 0 11px; font-size: 12px; }
+.btn-lang { height: 36px; min-width: 38px; padding: 0 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.02em; }
 
 /* Filter Dropdown Drawer */
 .filter-panel {
@@ -851,10 +852,10 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
   white-space: nowrap;
 }
 
-/* Dynamic height driven by active slide via JS; overflow-y: hidden prevents ghost space */
+/* Symmetrical equal-height carousel (align-items: stretch keeps all cards level top & bottom) */
 .lv-carousel {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 10px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -863,34 +864,37 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
   margin: 0 -14px;
-  padding: 6px 7% 12px;
+  padding: 4px 8% 10px;
   scrollbar-width: none;
-  transition: height 0.22s cubic-bezier(0.2, 0, 0, 1);
 }
 .lv-carousel::-webkit-scrollbar { display: none; }
 
 .lv-slide {
-  flex: 0 0 86%;
+  flex: 0 0 84%;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   overflow: hidden;
   scroll-snap-align: center;
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: 16px;
   padding: 12px;
-  opacity: 0.72;
-  transform: scale(0.97);
-  transform-origin: center top;
+  opacity: 0.78;
   box-shadow: var(--shadow);
-  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .lv-slide.is-active {
   opacity: 1;
-  transform: scale(1);
   border-color: var(--accent);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
 }
+
+.lv-slide .snap-mats { margin-top: auto; }
+.lv-slide .upg-acc { margin-top: auto; }
+.lv-slide.pc { border-radius: 16px; padding: 12px; }
 
 .lv-slide .hbg-snap-top {
   display: flex;
@@ -1570,7 +1574,7 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
     </div>
     <div class="logo-text"><b class="logo">MHGU Desk</b><span class="logo-sub">Senjata · Armor · Build</span></div>
   </div>
-  <div class="topbar-actions"><button type="button" class="icon-btn btn-refresh" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App">↻</button><button id="btn-theme-toggle" type="button" class="icon-btn btn-theme" onclick="toggleGuildTheme()" aria-label="Ganti tema">☀ Terang</button></div>
+  <div class="topbar-actions"><button id="btn-lang-toggle" type="button" class="icon-btn btn-lang" onclick="toggleAppLang()" aria-label="Ganti bahasa" title="Bahasa / Language">ID</button><button type="button" class="icon-btn btn-refresh" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App">↻</button><button id="btn-theme-toggle" type="button" class="icon-btn btn-theme" onclick="toggleGuildTheme()" aria-label="Ganti tema">☀ Terang</button></div>
 </header>
 <div id="toolbar" class="toolbar">
   <div class="search-row">
@@ -3365,20 +3369,7 @@ function setCarouselActiveIdx(wId,idx){
   }
  }
  car.dataset.cur=String(idx);
- syncCarouselHeight(car,idx);
 }
-function syncCarouselHeight(car,idx){
- if(!car)return;
- var slides=car.querySelectorAll('.lv-slide');
- var active=slides[idx]||slides[0];
- if(!active)return;
- var h=active.offsetHeight;
- if(h>0)car.style.height=(h+18)+'px';
-}
-window.addEventListener('resize',function(){
- var cars=document.querySelectorAll('.lv-carousel');
- for(var i=0;i<cars.length;i++)syncCarouselHeight(cars[i],parseInt(cars[i].dataset.cur||'0',10));
-});
 function jumpLevelSlide(wId,idx,instant){
  var deck=getActiveCarDeck(wId);
  if(!deck)return;
@@ -3721,12 +3712,12 @@ let simPiecesByPart={Head:[],Chest:[],Arms:[],Waist:[],Legs:[]};
 const VIEWS=['armor','hbg','items','build','wishlist'];
 function $(id){return document.getElementById(id);}
 const esc=escapeHtml;
-function showToast(msg){var el=$('guild-toast');el.dataset.go=/Build/.test(msg)?'1':'';el.textContent=msg+(el.dataset.go?' · ketuk untuk lihat':'');el.classList.remove('hidden');clearTimeout(window._tt);window._tt=setTimeout(function(){el.classList.add('hidden');},3200);}
+function showToast(msg){var el=$('guild-toast');var m=(typeof appLang!=='undefined'&&appLang==='en')?translateStrEn(msg):msg;el.dataset.go=/Build/.test(m)?'1':'';el.textContent=m+(el.dataset.go?(appLang==='en'?' · tap to view':' · ketuk untuk lihat'):'');el.classList.remove('hidden');clearTimeout(window._tt);window._tt=setTimeout(function(){el.classList.add('hidden');},3200);}
 function save(k,s){try{localStorage.setItem(k,JSON.stringify(Array.from(s)));}catch(e){}}
 var THEMES=['light','sepia','amoled'],THEME_LBL={light:'☀ Terang',sepia:'📜 Hangat',amoled:'🌙 AMOLED'};
-function applyTheme(t){var r=document.documentElement;var cur=t||r.dataset.theme||'light';if(cur==='dark')cur='amoled';if(THEMES.indexOf(cur)===-1)cur='light';r.dataset.theme=cur;var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',cur==='amoled'?'#000000':(cur==='sepia'?'#ede4d3':'#f3f1ed'));$('btn-theme-toggle').textContent=THEME_LBL[cur];return cur;}
+function applyTheme(t){var r=document.documentElement;var cur=t||r.dataset.theme||'light';if(cur==='dark')cur='amoled';if(THEMES.indexOf(cur)===-1)cur='light';r.dataset.theme=cur;var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',cur==='amoled'?'#000000':(cur==='sepia'?'#ede4d3':'#f3f1ed'));$('btn-theme-toggle').textContent=(typeof appLang!=='undefined'&&appLang==='en'?THEME_LBL_EN:THEME_LBL)[cur];return cur;}
 function toggleGuildTheme(){haptic(8);var cur=applyTheme(),nxt=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length];applyTheme(nxt);try{localStorage.setItem('mhgu_guild_theme',nxt);}catch(e){}showToast('Tema diubah ke '+THEME_LBL[nxt]);}
-function loadPersistedState(){try{var w=JSON.parse(localStorage.getItem('mhgu_guild_wishlist')||'[]');if(Array.isArray(w))wishlistIds=new Set(w);var m=JSON.parse(localStorage.getItem('mhgu_guild_matdone')||'[]');if(Array.isArray(m))matDone=new Set(m);var t=localStorage.getItem('mhgu_guild_theme');if(t)document.documentElement.dataset.theme=t;var bc=localStorage.getItem('mhgu_build_class');if(bc==='Blademaster'||bc==='Gunner')buildClass=bc;}catch(e){}applyTheme();updateWishlistBadges();}
+function loadPersistedState(){try{var w=JSON.parse(localStorage.getItem('mhgu_guild_wishlist')||'[]');if(Array.isArray(w))wishlistIds=new Set(w);var m=JSON.parse(localStorage.getItem('mhgu_guild_matdone')||'[]');if(Array.isArray(m))matDone=new Set(m);var t=localStorage.getItem('mhgu_guild_theme');if(t)document.documentElement.dataset.theme=t;var lg=localStorage.getItem('mhgu_guild_lang');if(lg==='en'||lg==='id')appLang=lg;var bc=localStorage.getItem('mhgu_build_class');if(bc==='Blademaster'||bc==='Gunner')buildClass=bc;}catch(e){}applyTheme();updateWishlistBadges();}
 function updateWishlistBadges(){$('wishlist-count-top').textContent=wishlistIds.size||'';}
 function hayA(a){return a._h||(a._h=(a.name+' '+a.hunterClass+' '+a.skills+' '+a.mats+' '+a.pieces.map(function(p){return p.name+' '+p.skills+' '+(p.scrap||[]).join(' ');}).join(' ')).toLowerCase());}
 function hayH(w){return w._h||(w._h=(w.tree+' '+(w.deviantMonster||'')+' '+w.evo+' '+w.siege+' '+(w.internal||'')+' '+w.mats+' '+w.stats+' '+w.levels.map(function(l){return l.name;}).join(' ')).toLowerCase());}
@@ -4141,34 +4132,52 @@ function toggleAllPieceUpgrades(btn){
  list.forEach(function(d){d.open=anyClosed;});
  btn.textContent=anyClosed?'Tutup Semua Upgrade':'Buka Semua Upgrade';
 }
+function renderArmorPieceInner(a,p,i){
+ var h='<div class="pc-h"><span class="nm"><span class="pc-part">'+esc(p.part)+'</span>'+esc(p.name)+'</span><button type="button" class="act-btn" data-act="piece" data-id="'+a.id+'" data-i="'+i+'">+ Pasang</button></div>';
+ h+='<div class="pc-stats"><span>Def <b>'+esc(p.def)+'</b></span> · <span>Res <b>'+esc(p.res)+'</b></span> · <span class="mono"><b>'+esc(p.slots)+'</b></span>'+(p.price?' · <span><b>'+fmtZ(p.price)+'</b></span>':'')+'</div>';
+ h+='<div class="skill-tags">'+formatSkillPillsHtml(p.skills, true)+'</div>';
+ if(p.forge&&p.forge.length){
+  h+='<div class="pc-sec-lbl">Bahan Forge</div><div class="pc-mats">'+p.forge.map(renderPieceMatChip).join('')+'</div>';
+ }
+ if(p.scrap&&p.scrap.length){
+  h+='<div class="scrap-line"><b>Palico Scrap:</b> '+esc(p.scrap.join(', '))+'</div>';
+ }
+ if(p.upgrades&&p.upgrades.length){
+  var lastLv=p.upgrades[p.upgrades.length-1][0];
+  h+='<details class="upg-acc"><summary><span>Upgrade Lv 2 – Lv '+lastLv+' ('+p.upgrades.length+' tahap)</span><span>▾</span></summary><div class="upg-list">';
+  p.upgrades.forEach(function(u){
+   h+='<div class="upg-row"><span class="upg-lv">LV'+u[0]+'</span><div class="upg-mats">'+u[1].map(renderPieceMatChip).join('')+'</div></div>';
+  });
+  h+='</div></details>';
+ }
+ return h;
+}
 function armorDetails(a){
  var srcBtn=a.sourceUrl?'<a class="src-link" href="'+esc(a.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Kiranico ↗</a>':'';
  var hasUpg=a.pieces.some(function(p){return p.upgrades&&p.upgrades.length;});
  var upgBtn=hasUpg?'<button type="button" class="act-btn" onclick="toggleAllPieceUpgrades(this)">Buka Semua Upgrade</button>':'';
  var h='<div class="set-meta-strip">'+formatResChipsHtml(a.res)+'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+(a.totalPrice?'<span class="stat-chip">Total '+fmtZ(a.totalPrice)+'</span>':'')+upgBtn+srcBtn+'</div></div>';
- h+='<div class="pcs">';
- a.pieces.forEach(function(p,i){
-  h+='<div class="pc">';
-  h+='<div class="pc-h"><span class="nm"><span class="pc-part">'+esc(p.part)+'</span>'+esc(p.name)+'</span><button type="button" class="act-btn" data-act="piece" data-id="'+a.id+'" data-i="'+i+'">+ Pasang</button></div>';
-  h+='<div class="pc-stats"><span>Def <b>'+esc(p.def)+'</b></span> · <span>Res <b>'+esc(p.res)+'</b></span> · <span class="mono"><b>'+esc(p.slots)+'</b></span>'+(p.price?' · <span><b>'+fmtZ(p.price)+'</b></span>':'')+'</div>';
-  h+='<div class="skill-tags">'+formatSkillPillsHtml(p.skills, true)+'</div>';
-  if(p.forge&&p.forge.length){
-   h+='<div class="pc-sec-lbl">Bahan Forge</div><div class="pc-mats">'+p.forge.map(renderPieceMatChip).join('')+'</div>';
-  }
-  if(p.scrap&&p.scrap.length){
-   h+='<div class="scrap-line"><b>Palico Scrap:</b> '+esc(p.scrap.join(', '))+'</div>';
-  }
-  if(p.upgrades&&p.upgrades.length){
-   var lastLv=p.upgrades[p.upgrades.length-1][0];
-   h+='<details class="upg-acc"><summary><span>Upgrade Lv 2 – Lv '+lastLv+' ('+p.upgrades.length+' tahap)</span><span>▾</span></summary><div class="upg-list">';
-   p.upgrades.forEach(function(u){
-    h+='<div class="upg-row"><span class="upg-lv">LV'+u[0]+'</span><div class="upg-mats">'+u[1].map(renderPieceMatChip).join('')+'</div></div>';
-   });
-   h+='</div></details>';
-  }
+ if(a.pieces.length>1){
+  var cid='arm-'+a.id;
+  var pills='<div data-car-pills="'+cid+'" class="lv-pills">';
+  var slides='<div data-car-id="'+cid+'" class="lv-carousel armor-carousel" data-cur="0" onscroll="onCarouselScroll(\''+cid+'\')">';
+  a.pieces.forEach(function(p,i){
+   var isFirst=(i===0);
+   pills+='<button type="button" class="lv-pill'+(isFirst?' active':'')+'" onclick="jumpLevelSlide(\''+cid+'\','+i+')">'+esc(p.part)+'</button>';
+   slides+='<div class="lv-slide pc'+(isFirst?' is-active':'')+'" data-idx="'+i+'">'+renderArmorPieceInner(a,p,i)+'</div>';
+  });
+  pills+='</div>';
+  slides+='</div>';
+  var nav='<div class="lv-nav-btns"><button type="button" class="lvl-step" onclick="stepLevelSlide(\''+cid+'\',-1)" aria-label="Slide kiri">‹</button><button type="button" class="lvl-step" onclick="stepLevelSlide(\''+cid+'\',1)" aria-label="Slide kanan">›</button></div>';
+  h+='<div class="lv-deck" data-car-init="'+cid+'"><div class="lv-deck-head">'+pills+nav+'</div>'+slides+'<div class="lv-swipe-hint">Geser kartu kiri/kanan atau ketuk bagian · '+a.pieces.length+' bagian</div></div>';
+ }else{
+  h+='<div class="pcs">';
+  a.pieces.forEach(function(p,i){
+   h+='<div class="pc">'+renderArmorPieceInner(a,p,i)+'</div>';
+  });
   h+='</div>';
- });
- h+='</div><div class="fc-foot"><button type="button" class="act-btn" data-act="row" data-id="'+a.id+'">Tutup Kartu ▴</button></div>';
+ }
+ h+='<div class="fc-foot"><button type="button" class="act-btn" data-act="row" data-id="'+a.id+'">Tutup Kartu ▴</button></div>';
  return h;
 }
 var AMX_R=[['Nrm',0,'Rcv',5,'Fir',10],['Prc',1,'Psn',6,'Wat',11],['Pel',2,'Par',7,'Thn',12],['Crg',3,'Sle',8,'Ice',13],['Cls',4,'Exh',9,'Dra',14]];
@@ -4261,7 +4270,7 @@ function renderHbgRowHtml(w,fromLv,hasCh,col){var ex=expandedRowIds.has(w.id),rr
  return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span><div class="row-meta-row"><span class="rare-badge r-'+rr+'">R'+rr+'</span>'+(hasCh?'<button type="button" class="tree-chip" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'</div></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span><span class="stat-chip">Aff '+(w.affinity>=0?'+':'')+w.affinity+'%</span><span class="stat-chip">'+esc(w.slots)+'</span></div><div class="skill-tags"><span class="sk-pill accent">Siege: '+esc(w.siege)+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?hbgDetails(w):'')+'</div></div>';}
 function toggleRowExpand(id){var row=$('view-'+currentView).querySelector('[data-row="'+id+'"]');if(!row)return;
  var d=row.querySelector('.row-details'),open=!expandedRowIds.has(id);
- if(open){expandedRowIds.add(id);var a=ARMOR_DATA.find(function(x){return x.id===id;});if(a)d.innerHTML=armorDetails(a);else{var gd=id.indexOf('gd-')===0?GUIDES_DATA.find(function(x){return 'gd-'+x.id===id;}):null;if(gd)d.innerHTML=guideDetails(gd);else{var mon=MONSTER_DATA.find(function(x){return x.id===id;});if(mon)d.innerHTML=monsterDetails(mon);else{var w=findWeaponById(id);if(w){d.innerHTML=w.wtype==='ig'?igDetails(w):(w.wtype==='lbg'?lbgDetails(w):(w.wtype==='bow'?bowDetails(w):hbgDetails(w)));initCarouselToMax(id);}}}}}else expandedRowIds.delete(id);
+ if(open){expandedRowIds.add(id);var a=ARMOR_DATA.find(function(x){return x.id===id;});if(a){d.innerHTML=armorDetails(a);if(a.pieces.length>1)initCarouselToMax('arm-'+id);}else{var gd=id.indexOf('gd-')===0?GUIDES_DATA.find(function(x){return 'gd-'+x.id===id;}):null;if(gd)d.innerHTML=guideDetails(gd);else{var mon=MONSTER_DATA.find(function(x){return x.id===id;});if(mon)d.innerHTML=monsterDetails(mon);else{var w=findWeaponById(id);if(w){d.innerHTML=w.wtype==='ig'?igDetails(w):(w.wtype==='lbg'?lbgDetails(w):(w.wtype==='bow'?bowDetails(w):hbgDetails(w)));initCarouselToMax(id);}}}}}else expandedRowIds.delete(id);
  row.classList.toggle('is-open',open);
  d.classList.toggle('hidden',!open);
  if(open)triggerAnim(d,'m3-reveal');}
@@ -4283,7 +4292,7 @@ function renderArmorCatalog(){
  var c=$('armor-catalog-container');if(!f.length){c.innerHTML=emptyMsg('Tidak ada armor yang cocok. Coba Reset filter atau cek tab lain.');return;}
  var n=Math.min(armorShown,f.length),h='';for(var i=0;i<n;i++)h+=renderArmorRowHtml(f[i]);
  if(f.length>n)h+='<button type="button" class="act-btn primary more" onclick="armorShown+=40;renderArmorCatalog()">Tampilkan '+Math.min(40,f.length-n)+' lagi ('+n+'/'+f.length+')</button>';
- c.innerHTML=h;}
+ c.innerHTML=h;initAllVisibleCarousels();}
 function renderItemsCatalog(){
  if(activeInfoSub==='monster'){renderMonstersCatalog();return;}
  if(activeInfoSub==='panduan'){renderGuidesCatalog();return;}
@@ -4445,7 +4454,7 @@ window.addEventListener('DOMContentLoaded',async function(){
 });
 
 /* === PWA Service Worker & 1-Tap In-App Auto-Update (v10.0 Network-First) === */
-var MHGU_APP_VERSION='v11.0',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
+var MHGU_APP_VERSION='v11.2',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
 function showPwaUpdateBanner(sw){
  _pwaWaiting=sw;
  var b=$('pwa-update-banner');
@@ -4500,6 +4509,325 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){
   });
  });
 }
+
+
+/* === v11.1: Bilingual i18n Engine (ID / EN) === */
+var appLang = 'id';
+var THEME_LBL_EN = { light: '☀ Light', sepia: '📜 Sepia', amoled: '🌙 AMOLED' };
+
+var I18N_EXACT = {
+  // Topbar, Search, Filter & Nav
+  'Senjata · Armor · Build': 'Weapons · Armor · Build',
+  'Senjata': 'Weapons',
+  'Filter': 'Filter',
+  'Reset': 'Reset',
+  'Selesai': 'Done',
+  'Tutup': 'Close',
+  'Simpan': 'Save',
+  'Salin': 'Copy',
+  'Tambah': 'Add',
+  'Semua': 'All',
+  'Bandingkan': 'Compare',
+  'Batal bandingkan': 'Uncompare',
+  'Tutup Kartu ▴': 'Close Card ▴',
+  'Tutup Notes ▴': 'Close Notes ▴',
+  'Buka/Tutup Detail LV': 'Expand/Collapse LV',
+  'Buka cabang': 'Expand trees',
+  'Tutup cabang': 'Collapse trees',
+  'Cari skill': 'Skill Finder',
+  'Reset filter': 'Reset filters',
+  'Salin daftar': 'Copy list',
+  'Hapus semua': 'Clear all',
+  'Isi dari skill': 'Auto-fill by skill',
+  'Isi otomatis Build (per bagian)': 'Auto-fill Build (per piece)',
+  'Build tersimpan': 'Saved builds',
+  'Set armor terbaik': 'Best armor sets',
+  'Cari kombinasi skill': 'Skill Combination Finder',
+  'Lokasi & drop rate': 'Drop rates & locations',
+  'Pulihkan (menimpa data sekarang)': 'Restore (overwrites current data)',
+  '⚖ Perbandingan Senjata': '⚖ Weapon Comparison',
+  'Target farming & equipment yang di-pin': 'Pinned equipment & farming targets',
+  'Daftar Bahan Farming Forge': 'Forge Farming Material List',
+  'Pembaruan MHGU Desk tersedia': 'MHGU Desk update available',
+  'Data Pin, Build & Progres tetap aman.': 'Pins, Builds & Progress stay safe.',
+  'Terapkan': 'Apply',
+  'Evolusi:': 'Evolution:',
+  'Ketuk bahan untuk melihat lokasi & drop rate:': 'Tap a material for drop rates & locations:',
+  'Ketuk bahan untuk lihat lokasi & drop rate:': 'Tap a material for drop rates & locations:',
+  'Tanpa skill (Slot murni)': 'No skills (Slots only)',
+  'Tanpa Coating': 'No Coatings',
+  'Tanpa kelemahan elemen ≥15': 'No elemental weakness ≥15',
+  'Small Monster · cek drop bahan': 'Small Monster · check item drops',
+  'Bagian': 'Parts',
+  'Lihat Drop Bahan': 'View Item Drops',
+  'Ukuran & Crown Size': 'Size & Crown Range',
+  'Sumber verifikasi:': 'Verified sources:',
+  '✓ Paham': '✓ Done',
+  'Materi': 'Lesson',
+  '✓ Sudah Paham': '✓ Completed',
+  'Tandai Paham': 'Mark Done',
+  '← Kembali ke Kurikulum': '← Back to Curriculum',
+  'Hasil Ujian Akhir': 'Final Exam Result',
+  'Ulangi Ujian': 'Retake Exam',
+  'Nilai Ujian': 'Grade Exam',
+  '1. Pilih Senjata (HBG / LBG / Bow / IG) & 5 Bagian Armor': '1. Select Weapon (HBG / LBG / Bow / IG) & 5 Armor Pieces',
+  '2. Tambahan Poin Talisman (Charm) & Jewel': '2. Talisman (Charm) & Decoration Points',
+  '3. Skill Aktif (+10 / +15 / +20) & Poin': '3. Active Skills (+10 / +15 / +20) & Points',
+  'Aturan MHGU: slot Head bebas lintas kelas (BM/GN), sedangkan Chest–Legs mengikuti mode kelas aktif.': 'MHGU rule: Head slot is cross-class (BM/GN); Chest–Legs follow the active class mode.',
+  'Build terakhir otomatis tersimpan. Beri nama untuk menyimpan beberapa versi.': 'Your latest build auto-saves. Name it to save multiple loadouts.',
+  'Pilih skill dan targetnya. Hasil: set armor dengan poin terbanyak, atau isi Build otomatis per bagian.': 'Pick skills and targets. Shows top armor sets, or auto-fills Build piece by piece.',
+  'Salin teks ini dan simpan (misalnya kirim ke diri sendiri). Untuk memulihkan di perangkat lain, tempel teksnya di sini lalu tekan Pulihkan.': 'Copy and save this text (e.g. send to yourself). To restore on another device, paste it here and tap Restore.',
+  'Kosong · ketuk untuk pilih': 'Empty · tap to pick',
+  'Belum ada Pin. Ketuk ☆ pada armor, senjata, atau bahan — daftar bahan farming-nya otomatis dirangkum di sini.': 'No Pins yet. Tap ☆ on armor, weapons, or items — their farming materials will be summarized here.',
+  'Belum ada build tersimpan.': 'No saved builds yet.',
+  'Tidak ada item yang cocok. Coba ubah kata kunci atau Reset filter.': 'No matching items. Try another keyword or Reset filters.',
+  'Tidak ada armor yang cocok. Coba ubah kata kunci atau Reset filter.': 'No matching armor. Try another keyword or Reset filters.',
+  'Tidak ada senjata yang cocok. Coba ubah kata kunci atau Reset filter.': 'No matching weapons. Try another keyword or Reset filters.',
+  'Tidak ada monster yang cocok. Coba ubah kata kunci atau Reset filter.': 'No matching monsters. Try another keyword or Reset filters.',
+  'Tidak ada tabel drop langsung (Toko / Kombinasi / Khusus)': 'No direct drop table (Shop / Combine / Special)',
+  'Dipakai untuk Craft': 'Used for Crafting',
+  'Sumber Drop Terbaik': 'Best Drop Sources',
+  'Semua Rank': 'All Ranks',
+  'Semua: Set & Satuan': 'All: Sets & Pieces',
+  'Full Set 5-Bagian': 'Full 5-Piece Sets',
+  'Satuan / Parsial 1–4 Pc': 'Standalone / Partial 1–4 Pc',
+  'Slot: Semua': 'Slots: All',
+  'Min 5 Slot': 'Min 5 Slots',
+  'Min 8 Slot': 'Min 8 Slots',
+  'Min 10 Slot': 'Min 10 Slots',
+  'Urutan: Bawaan (Rarity)': 'Sort: Default (Rarity)',
+  'Max Def Tertinggi': 'Highest Max Def',
+  'Total Slot Terbanyak': 'Most Total Slots',
+  'Nama A → Z': 'Name A → Z',
+  '🌳 Mode Pohon Evolusi (Tree)': '🌳 Evolution Tree View',
+  '📋 Mode Daftar Urut (List)': '📋 Flat List View',
+  'Siege Ammo: Semua': 'Siege Ammo: All',
+  'Urutan Tree (1–108)': 'Tree Order (1–108)',
+  'Urutan Tree (1–82)': 'Tree Order (1–82)',
+  'Urutan: Bawaan (Pohon)': 'Sort: Default (Tree)',
+  'Urutan: Bawaan (Kiranico)': 'Sort: Default (Kiranico)',
+  'Max Raw Tertinggi': 'Highest Max Raw',
+  'Elemen Tertinggi': 'Highest Element',
+  'Affinity Tertinggi': 'Highest Affinity',
+  'Slot Terbanyak': 'Most Slots',
+  'Elemen / Status: Semua': 'Element / Status: All',
+  'Tanpa Elemen (Raw)': 'No Element (Raw)',
+  'Sharpness: Semua': 'Sharpness: All',
+  'Rapid Fire: Semua': 'Rapid Fire: All',
+  'RF: Elemen (Fir/Wat/Thn/Ice/Dra)': 'RF: Elemental (Fir/Wat/Thn/Ice/Dra)',
+  'Elemen: Semua': 'Element: All',
+  'Raw Murni': 'Pure Raw',
+  'Tipe Charge: Semua': 'Charge Type: All',
+  'Arc Shot: Semua': 'Arc Shot: All',
+  'Semua Monster (130)': 'All Monsters (130)',
+  'Kelemahan Elemen: Semua': 'Elemental Weakness: All',
+  'Lemah Fire (≥20)': 'Weak to Fire (≥20)',
+  'Lemah Water (≥20)': 'Weak to Water (≥20)',
+  'Lemah Thunder (≥20)': 'Weak to Thunder (≥20)',
+  'Lemah Ice (≥20)': 'Weak to Ice (≥20)',
+  'Lemah Dragon (≥20)': 'Weak to Dragon (≥20)',
+  'Semua Sumber (2.906)': 'All Sources (2,906)',
+  'Hanya Material Craft (Armor/HBG)': 'Craft Materials Only (Armor/Weapons)',
+  'Ada Monster Drop': 'Has Monster Drops',
+  'Ada Quest Reward': 'Has Quest Rewards',
+  'Ada Map Gathering': 'Has Map Gathering',
+  'Senjata (HBG / LBG / Bow / IG)': 'Weapon (HBG / LBG / Bow / IG)',
+  'Di-pin': 'Pinned',
+  'Pin dihapus': 'Unpinned',
+  'Semua pin dihapus': 'All pins cleared',
+  'Disalin ke clipboard': 'Copied to clipboard',
+  'Filter direset': 'Filters reset',
+  'Menarik versi terbaru dari server…': 'Fetching latest version from server…',
+  'Mode file lokal — unggah ke GitHub Pages (HTTPS) agar update 1-tap aktif': 'Local file mode — upload to GitHub Pages (HTTPS) for 1-tap updates',
+  'Tutup kartu': 'Close card',
+  'Bahan Forge': 'Forge Materials',
+  'Upgrade Armor': 'Armor Upgrades',
+  '+ Pasang': '+ Equip',
+  'Buka Semua Upgrade': 'Expand All Upgrades',
+  'Tutup Semua Upgrade': 'Collapse All Upgrades'
+};
+
+var I18N_PLACEHOLDERS = {
+  'global-search': ['Cari armor, senjata, skill, bahan…', 'Search armor, weapons, skills, items…'],
+  'build-name': ['Nama build, mis. Silver Sol Pierce', 'Build name, e.g. Silver Sol Pierce'],
+  'sf-add': ['Skill lain, mis. Rapid Fire', 'Other skill, e.g. Rapid Fire'],
+  'pk-q': ['Cari nama atau skill…', 'Search name or skill…'],
+  'sim-charm-skill1': ['Nama Skill 1', 'Skill 1 Name'],
+  'sim-charm-skill2': ['Nama Skill 2', 'Skill 2 Name']
+};
+
+function translateStrEn(s) {
+  if (!s || appLang !== 'en') return s;
+  var t = s.trim();
+  if (!t) return s;
+  if (I18N_EXACT[t]) return s.replace(t, I18N_EXACT[t]);
+
+  var out = s;
+  // Pattern-based translations (preserve numbers & game proper names)
+  out = out.replace(/^Semua\s*\((\d+)\)$/, 'All ($1)');
+  out = out.replace(/^Bahan\s*\((\d+)\)$/, 'Items ($1)');
+  out = out.replace(/^💎\s*Bahan\s*\((\d+)\)$/, '💎 Items ($1)');
+  out = out.replace(/^📖\s*Panduan\s*\((\d+)\)$/, '📖 Guides ($1)');
+  out = out.replace(/^Pohon IG\s*\((\d+)\)$/, 'IG Trees ($1)');
+  out = out.replace(/^Katalog Kinsect\s*\((\d+)\)$/, 'Kinsect Catalog ($1)');
+  out = out.replace(/^Lemah (Fire|Water|Thunder|Ice|Dragon)$/, 'Weak $1');
+  out = out.replace(/^Satuan (\d+)$/, 'Piece $1');
+  out = out.replace(/^↰ Dari (.+)$/, '↰ From $1');
+  out = out.replace(/^Geser kartu kiri\/kanan atau ketuk LV · (\d+) level$/, 'Swipe card or tap LV · $1 levels');
+  out = out.replace(/^Tampilkan (\d+) lagi \((\d+)\/(\d+)\)$/, 'Show $1 more ($2/$3)');
+  out = out.replace(/^Tampilkan (\d+) lagi$/, 'Show $1 more');
+  out = out.replace(/^Menampilkan (\d+) dari (\d+) pohon (HBG|LBG|Bow|IG) \((\d+) level lengkap · klik baris untuk ([^)]+)\)$/, 'Showing $1 of $2 $3 trees ($4 levels · tap card for details)');
+  out = out.replace(/^(\d+) armor \((\d+) set · (\d+) satuan\)$/, '$1 armor ($2 sets · $3 pieces)');
+  out = out.replace(/^(\d+) dari (\d+) item \(ketuk item untuk lihat drop rate\)$/, '$1 of $2 items (tap an item for drop rates)');
+  out = out.replace(/^Hunter’s Notes: (\d+) dari (\d+) monster \(ketuk untuk Fisiologi, Extract & Status\)$/, 'Hunter’s Notes: $1 of $2 monsters (tap for Hitzones, Extracts & Status)');
+  out = out.replace(/^Lainnya (\d+)$/, 'Other $1');
+  out = out.replace(/^Equip (\d+)$/, 'Used in $1');
+  out = out.replace(/ AKTIF$/, ' ACTIVE');
+  out = out.replace(/ \(kurang (\d+)\)$/, ' (need $1)');
+  out = out.replace(/^-- (Head|Chest|Arms|Waist|Legs): Kosong --$/, '-- $1: Empty --');
+  out = out.replace(/^Tema diubah ke (.+)$/, 'Theme switched to $1');
+  out = out.replace(/^Dipasang ke Build \(([^)]+)\): (.+)$/, 'Equipped to Build ($1): $2');
+  out = out.replace(/^Bagian (.+) dipasang ke Build$/, 'Equipped $1 to Build');
+  out = out.replace(/^([A-Z]+) dipasang ke Build \(([^)]+)\): (.+)$/, '$1 equipped to Build ($2): $3');
+  out = out.replace(/ · ketuk untuk lihat$/, ' · tap to view');
+  out = out.replace(/^untuk: /, 'for: ');
+  out = out.replace(/^Rangkuman bahan forge dari armor\/senjata yang di-pin/, 'Summary of forge materials from pinned equipment');
+  out = out.replace(/\. Centang kalau sudah dapat\.$/, '. Check off once obtained.');
+  out = out.replace(/^Sedang offline — memakai cache (.+)$/, 'Offline — using cache $1');
+  out = out.replace(/^Gagal cek server — memakai cache (.+)$/, 'Server check failed — using cache $1');
+  out = out.replace(/^Upgrade (\d+) level$/, 'Upgrades ($1 levels)');
+  out = out.replace(/^Geser kartu kiri\/kanan atau ketuk bagian · (\d+) bagian$/, 'Swipe card or tap piece · $1 pieces');
+  out = out.replace(/^Upgrade Lv 2 – Lv (\d+) \((\d+) tahap\)$/, 'Upgrade Lv 2 – Lv $1 ($2 steps)');
+  return out;
+}
+
+function translateDomTree(root) {
+  if (appLang !== 'en' || !root) return;
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  var node;
+  while ((node = walker.nextNode())) {
+    var p = node.parentElement;
+    if (!p || p.tagName === 'SCRIPT' || p.tagName === 'STYLE') continue;
+    var val = node.nodeValue;
+    if (!val || !val.trim()) continue;
+    var tr = translateStrEn(val);
+    if (tr !== val) node.nodeValue = tr;
+  }
+}
+
+function snapshotStaticI18n() {
+  if (window._i18nSnapDone) return;
+  window._i18nSnapDone = true;
+  var sels = [
+    '.logo-sub', '#btn-filter', '.nav .tab-btn span:last-of-type',
+    '#filter-panel option', '#filter-panel .dbar button',
+    '#view-armor .status-strip button', '#view-hbg .status-strip button',
+    '#hbg-compare-tray strong', '#hbg-compare-tray button',
+    '#view-items .status-strip button', '#view-wishlist .status-strip span', '#view-wishlist .status-strip button',
+    '#view-build b', '#view-build .sub', '#view-build .card-box > div:first-child', '#view-build .dbar button',
+    '#material-lookup-modal .offline-pill',
+    '#sf-modal .modal-head b', '#sf-modal .sub', '#sf-modal button',
+    '#bk-modal .sub', '#bk-modal button',
+    '#pwa-update-banner b', '#pwa-update-banner .sub', '#pwa-update-banner button'
+  ];
+  document.querySelectorAll(sels.join(',')).forEach(function(el) {
+    if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3) {
+      el.dataset.i18nId = el.textContent;
+    }
+  });
+}
+
+function applyStaticLang() {
+  snapshotStaticI18n();
+  document.documentElement.lang = appLang;
+  document.title = appLang === 'en' ? 'MHGU Desk — Weapons, Armor & Drop Rates' : 'MHGU Desk — Senjata, Armor & Drop Rate';
+  var lb = $('btn-lang-toggle');
+  if (lb) {
+    lb.textContent = appLang.toUpperCase();
+    lb.setAttribute('aria-label', appLang === 'en' ? 'Switch language (EN)' : 'Ganti bahasa (ID)');
+  }
+  for (var id in I18N_PLACEHOLDERS) {
+    var inp = $(id);
+    if (inp) inp.placeholder = I18N_PLACEHOLDERS[id][appLang === 'en' ? 1 : 0];
+  }
+  document.querySelectorAll('[data-i18n-id]').forEach(function(el) {
+    var orig = el.dataset.i18nId;
+    el.textContent = appLang === 'en' ? translateStrEn(orig) : orig;
+  });
+  // Update theme button label for active language
+  var curTheme = document.documentElement.dataset.theme || 'light';
+  var tb = $('btn-theme-toggle');
+  if (tb) tb.textContent = (appLang === 'en' ? THEME_LBL_EN : THEME_LBL)[curTheme] || tb.textContent;
+}
+
+function setAppLang(lang, silent) {
+  appLang = (lang === 'en') ? 'en' : 'id';
+  try { localStorage.setItem('mhgu_guild_lang', appLang); } catch (e) {}
+  applyStaticLang();
+  renderQuickPillBar();
+  renderCurrent();
+  if (typeof simInitialized !== 'undefined' && simInitialized) {
+    renderSlots();
+    renderBuilds();
+    recalculateSimulator();
+  }
+  if (appLang === 'en') {
+    translateDomTree($('sub-controls'));
+    translateDomTree(document.querySelector('main'));
+  }
+  if (!silent) showToast(appLang === 'en' ? 'Language switched to English' : 'Bahasa diubah ke Indonesia');
+}
+
+function toggleAppLang() {
+  haptic(8);
+  setAppLang(appLang === 'en' ? 'id' : 'en', false);
+}
+
+/* Auto-hook dynamic renderers so EN mode stays translated across all interactions */
+(function() {
+  function wrapAfter(fnName, getTarget) {
+    var orig = window[fnName];
+    if (typeof orig !== 'function') return;
+    window[fnName] = function() {
+      var res = orig.apply(this, arguments);
+      if (appLang === 'en') {
+        var tgt = getTarget ? getTarget.apply(this, arguments) : document.querySelector('main');
+        if (tgt) translateDomTree(tgt);
+      }
+      return res;
+    };
+  }
+  wrapAfter('renderQuickPillBar', function() { return $('sub-controls'); });
+  wrapAfter('renderCurrent', function() { return $('view-' + currentView); });
+  wrapAfter('toggleRowExpand', function(id) { return $('view-' + currentView); });
+  wrapAfter('renderMaterialSheet', function() { return $('material-lookup-modal'); });
+  wrapAfter('renderHbgCompareTray', function() { return $('hbg-compare-tray'); });
+  wrapAfter('renderSlots', function() { return $('view-build'); });
+  wrapAfter('renderBuilds', function() { return $('view-build'); });
+  wrapAfter('recalculateSimulator', function() { return $('view-build'); });
+  wrapAfter('openSF', function() { return $('sf-modal'); });
+  wrapAfter('renderSF', function() { return $('sf-modal'); });
+  wrapAfter('renderSFResults', function() { return $('sf-modal'); });
+  wrapAfter('openPicker', function() { return $('picker-modal'); });
+  wrapAfter('renderPicker', function() { return $('picker-modal'); });
+  wrapAfter('renderWishlistView', function() { return $('view-wishlist'); });
+  wrapAfter('renderMonsterDetails', function() { return $('view-items'); });
+  wrapAfter('switchMonsterSubTab', function() { return $('view-items'); });
+  wrapAfter('switchMonsterState', function() { return $('view-items'); });
+
+  // Apply persisted language once DOM & data init finishes
+  var origInit = window.applyTheme;
+  window.addEventListener('DOMContentLoaded', function() {
+    applyStaticLang();
+  });
+  setTimeout(function() {
+    applyStaticLang();
+    if (appLang === 'en') {
+      translateDomTree($('sub-controls'));
+      translateDomTree(document.querySelector('main'));
+    }
+  }, 120);
+})();
 
 </script>
 </body>
