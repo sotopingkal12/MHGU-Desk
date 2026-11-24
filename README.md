@@ -1,9 +1,4 @@
 # MHGU Desk — PWA Android (v11.0)
-
-## Cara Upload / Update ke GitHub Pages
-1. Ekstrak seluruh isi ZIP ini dan unggah **isi file-nya langsung** ke root repo `MHGU-Desk`: `index.html`, `sw.js`, `manifest.json`, `icon.svg`, `icon-192.png`, `icon-512.png`, `README.md`.
-2. Tunggu ~1 menit sampai GitHub Pages selesai deploy.
-
 ## Perubahan di v11.0
 - Penulisan ulang penuh blok CSS (`<style>`) dari nol bergaya Material 3 Android native (bersih dari konflik patch lama, 3 tema: Terang, Hangat/Sepia, AMOLED).
 - Perbaikan alignment seluruh kartu Armor, Senjata, Monster, Bahan, dan Panduan agar judul & badge rata kiri sejajar stat.
