@@ -1580,15 +1580,27 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
   .modal-overlay:not(.hidden), .modal-overlay:not(.hidden) .modal-box { animation: none !important; }
   * { transition: none !important; }
 }
+
+/* 16. v11.5 — Info app, versi, riwayat pembaruan */
+.logo-wrap { cursor: pointer; }
+.ver-tag { font: 600 10px var(--font-sans); color: var(--text-muted); margin-left: 6px; vertical-align: middle; }
+.info-sec { margin: 0 0 14px; }
+.info-sec h4 { margin: 0 0 6px; font: 700 13px var(--font-sans); color: var(--text); }
+.info-kv { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.info-kv span:first-child { color: var(--text-muted); flex: none; }
+.info-kv span:last-child { text-align: right; color: var(--text); }
+.wn-day { margin: 0 0 10px; }
+.wn-day b { font-size: 12.5px; color: var(--text); }
+.wn-day ul { margin: 4px 0 0; padding-left: 18px; font-size: 13px; color: var(--text); line-height: 1.45; }
 </style>
 </head>
 <body>
 <header class="topbar">
-  <div class="logo-wrap">
+  <div class="logo-wrap" role="button" tabindex="0" aria-label="Info app dan riwayat pembaruan" onclick="openInfo()" onkeydown="if(event.key==='Enter')openInfo()">
     <div class="logo-mark" aria-hidden="true">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><path d="M12 2.5V6M12 18V21.5M2.5 12H6M18 12H21.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
     </div>
-    <div class="logo-text"><b class="logo">MHGU Desk</b><span class="logo-sub">Senjata · Armor · Build</span></div>
+    <div class="logo-text"><b class="logo">MHGU Desk<span class="ver-tag" id="ver-tag"></span></b><span class="logo-sub">Senjata · Armor · Build</span></div>
   </div>
   <div class="topbar-actions"><button id="btn-lang-toggle" type="button" class="icon-btn btn-lang" onclick="toggleAppLang()" aria-label="Ganti bahasa" title="Bahasa / Language">ID</button><button type="button" class="icon-btn btn-refresh" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App">↻</button><button id="btn-theme-toggle" type="button" class="icon-btn btn-theme" onclick="toggleGuildTheme()" aria-label="Ganti tema">☀ Terang</button></div>
 </header>
@@ -1854,6 +1866,7 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
 <div class="sub" style="margin-bottom:8px">Salin teks ini dan simpan (misalnya kirim ke diri sendiri). Untuk memulihkan di perangkat lain, tempel teksnya di sini lalu tekan Pulihkan.</div>
 <textarea id="bk-text" class="ctrl-select" rows="8" style="font-family:ui-monospace,monospace"></textarea>
 <div class="dbar" style="margin-top:8px"><button type="button" class="act-btn primary" onclick="copyText($('bk-text').value)">Salin</button><button type="button" class="act-btn" onclick="restoreBackup()">Pulihkan (menimpa data sekarang)</button></div></div></div>
+<div id="info-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeInfo()"><div class="modal-box"><div class="modal-head"><b id="info-title" style="font:700 16px var(--font-sans);color:var(--text)">Info app</b><button type="button" onclick="closeInfo()" class="act-btn primary" aria-label="Tutup">✕</button></div><div id="info-body"></div></div></div>
 <div id="picker-modal" class="modal-overlay hidden" onclick="if(event.target===this)closePicker()"><div class="modal-box pk-box"><div class="pk-top"><div class="modal-head" style="margin:0;padding:0;border:0;align-items:center"><div><b id="pk-title" style="font:700 16px var(--font-sans);color:var(--text)"></b> <span id="pk-count" class="sub"></span></div><button type="button" onclick="closePicker()" class="act-btn primary">✕</button></div>
 <input id="pk-q" type="text" autocomplete="off" oninput="pkSearch()" placeholder="Cari nama atau skill…" class="search-input" style="border-color:var(--border)"><div id="pk-chips" class="pill-strip"></div><div id="pk-skills" class="pill-strip"></div></div><div id="pk-list" class="pk-list"></div></div></div>
 <div id="guild-toast" class="toast-box hidden"></div>
@@ -3766,7 +3779,7 @@ function pushOverlayHistory(){
  try{if(_overlayPushCount===0&&window.history&&typeof history.pushState==='function'){history.pushState({mhguOverlay:true},'');_overlayPushCount=1;}}catch(e){}
 }
 function popOverlayIfAny(){
- var ids=['material-lookup-modal','picker-modal','sf-modal','bk-modal'];
+ var ids=['material-lookup-modal','picker-modal','sf-modal','bk-modal','info-modal'];
  for(var i=0;i<ids.length;i++){
   var el=$(ids[i]);
   if(el&&!el.classList.contains('hidden')){el.classList.add('hidden');return true;}
@@ -4453,12 +4466,13 @@ window.addEventListener('DOMContentLoaded',async function(){
  loadPersistedState();
  loadBuilds();
  initSheetSwipeToDismiss();
+ var _vt=$('ver-tag');if(_vt)_vt.textContent=MHGU_APP_VERSION;
  $('hbg-catalog-container').innerHTML='<div class="loading-banner">Memuat 1.196 armor, 406 senjata (HBG/LBG/Bow/IG), 130 monster &amp; 2.906 bahan MHGU…</div>';
  try {
   await loadAllCompressedData();
   buildSearchIndexes();
  } catch(err) {
-  $('hbg-catalog-container').innerHTML=emptyMsg('Gagal memuat database terkompresi: '+esc(err.message));
+  $('hbg-catalog-container').innerHTML=emptyMsg('Gagal memuat database terkompresi: '+esc(err.message)+'<div style="margin-top:10px"><button type="button" class="act-btn primary" onclick="resetAppCache()">Reset cache &amp; muat ulang</button></div>');
   return;
  }
  var sb=null;try{sb=JSON.parse(localStorage.getItem('mhgu_build_current')||'null');}catch(e){}
@@ -4468,10 +4482,11 @@ window.addEventListener('DOMContentLoaded',async function(){
  _pendingBuild=sb;
  renderBuilds();
  renderCurrent();
+ maybeShowWhatsNew();
 });
 
 /* === PWA Service Worker & 1-Tap In-App Auto-Update (v10.0 Network-First) === */
-var MHGU_APP_VERSION='v11.4',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
+var MHGU_APP_VERSION='v11.5',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
 function showPwaUpdateBanner(sw){
  _pwaWaiting=sw;
  var b=$('pwa-update-banner');
@@ -4479,6 +4494,7 @@ function showPwaUpdateBanner(sw){
 }
 function applyPwaUpdate(){
  haptic(12);
+ try{if(_updSig)localStorage.setItem('mhgu_upd_ack',_updSig);}catch(e){}
  if(_pwaWaiting){_pwaWaiting.postMessage({type:'SKIP_WAITING'});}
  else{location.reload();}
 }
@@ -4527,6 +4543,79 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){
  });
 }
 
+
+/* === v11.5: Auto-deteksi update, Info app, Riwayat pembaruan, Reset cache === */
+/* RIWAYAT PEMBARUAN: tambah entri BARU di PALING ATAS (id = tanggal). Tampil otomatis sekali ke tiap pengguna. */
+var MHGU_CHANGELOG=[
+ {id:'2026-11-24',v:'v11.5',items:[
+  'Banner "Pembaruan tersedia" muncul otomatis saat app dibuka kembali.',
+  'Ketuk logo MHGU Desk untuk melihat versi, riwayat pembaruan, dan Reset cache.',
+  'Layar error data kini punya tombol Reset cache & muat ulang.'
+ ]}
+];
+var _updChk=false,_updAt=0,_updFound=false,_updSig='';
+function _hdrSig(r){var e=r.headers.get('etag');if(e)return 'e:'+e;var m=r.headers.get('last-modified');return m?'m:'+m:'';}
+function checkIndexUpdate(force){
+ if(_updFound||_updChk||location.protocol==='file:'||navigator.onLine===false||!window.caches||!window.fetch)return;
+ if(!force&&Date.now()-_updAt<20000)return;
+ _updChk=true;_updAt=Date.now();
+ var cur='';
+ caches.match('./index.html',{ignoreSearch:true}).then(function(c){
+  cur=c?_hdrSig(c):'';
+  if(!cur)return null;
+  return fetch(location.pathname,{method:'HEAD',cache:'no-store'});
+ }).then(function(r){
+  _updChk=false;
+  if(!r||!r.ok)return;
+  var s=_hdrSig(r),ack='';
+  try{ack=localStorage.getItem('mhgu_upd_ack')||'';}catch(e){}
+  if(s&&s!==ack&&s!==cur&&s.charAt(0)===cur.charAt(0)){_updFound=true;_updSig=s;showPwaUpdateBanner(_pwaWaiting);}
+ }).catch(function(){_updChk=false;});
+}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkIndexUpdate();});
+window.addEventListener('online',function(){checkIndexUpdate(true);});
+window.addEventListener('load',function(){setTimeout(function(){checkIndexUpdate(true);},3000);});
+
+function resetAppCache(){
+ if(!confirm(L('Hapus cache aplikasi dan muat ulang? Pin, Build & Progres tidak terhapus.','Clear the app cache and reload? Your Pins, Builds & Progress are kept.')))return;
+ var jobs=[];
+ if('serviceWorker' in navigator)jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}));
+ if(window.caches)jobs.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
+ Promise.all(jobs).catch(function(){}).then(function(){_pwaReloading=true;location.reload();});
+}
+function _wnSeen(){try{return localStorage.getItem('mhgu_seen_changelog')||'';}catch(e){return '';}}
+function _wnList(onlyNew){
+ var seen=_wnSeen(),out=[];
+ for(var i=0;i<MHGU_CHANGELOG.length;i++){if(onlyNew&&MHGU_CHANGELOG[i].id===seen)break;out.push(MHGU_CHANGELOG[i]);}
+ return out.slice(0,onlyNew?5:12);
+}
+function openInfo(isNew){
+ var cnt=function(v){return (v&&v.length)?v.length:0;};
+ var kv=function(k,v){return '<div class="info-kv"><span>'+k+'</span><span>'+v+'</span></div>';};
+ var list=_wnList(!!isNew),h='';
+ if(list.length){
+  h+='<div class="info-sec"><h4>'+L(isNew?'Yang baru':'Riwayat pembaruan',isNew?"What's new":'Update history')+'</h4>';
+  list.forEach(function(e){h+='<div class="wn-day"><b>'+esc(e.id)+(e.v?' · '+esc(e.v):'')+'</b><ul>'+e.items.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul></div>';});
+  h+='</div>';
+ }
+ var swOn=('serviceWorker' in navigator)&&navigator.serviceWorker.controller;
+ var weapons=cnt(HBG_DATA)+cnt(LBG_DATA)+cnt(BOW_DATA)+cnt(IG_DATA);
+ h+='<div class="info-sec">'
+  +kv(L('Versi app','App version'),esc(MHGU_APP_VERSION))
+  +kv(L('Data','Data'),cnt(ARMOR_DATA)+' armor, '+weapons+L(' senjata, ',' weapons, ')+cnt(MONSTER_DATA)+' monster, '+cnt(ITEMS_DATA)+L(' bahan',' items'))
+  +kv(L('Koneksi','Connection'),navigator.onLine===false?'Offline':'Online')
+  +kv(L('Mode offline','Offline mode'),swOn?L('Siap','Ready'):L('Belum aktif','Not active'))
+  +'</div>'
+  +'<div class="dbar"><button type="button" class="act-btn primary" onclick="closeInfo();checkPwaUpdate()">'+L('Cek update','Check update')+'</button><button type="button" class="act-btn" onclick="resetAppCache()">'+L('Reset cache &amp; muat ulang','Reset cache &amp; reload')+'</button></div>'
+  +'<div class="sub" style="margin-top:6px">'+L('Reset cache tidak menghapus Pin, Build &amp; Progres.','Reset keeps your Pins, Builds &amp; Progress.')+'</div>';
+ $('info-title').textContent='MHGU Desk '+MHGU_APP_VERSION;
+ $('info-body').innerHTML=h;
+ if(MHGU_CHANGELOG.length){try{localStorage.setItem('mhgu_seen_changelog',MHGU_CHANGELOG[0].id);}catch(e){}}
+ pushOverlayHistory();
+ $('info-modal').classList.remove('hidden');
+}
+function closeInfo(){$('info-modal').classList.add('hidden');_overlayPushCount=0;}
+function maybeShowWhatsNew(){if(MHGU_CHANGELOG.length&&_wnSeen()!==MHGU_CHANGELOG[0].id)setTimeout(function(){openInfo(true);},500);}
 
 /* === v11.3: Comprehensive Bilingual i18n Engine (ID / EN) + Anti-Revert Observer === */
 var THEME_LBL_EN = { light: '☀ Light', sepia: '📜 Sepia', amoled: '🌙 AMOLED' };

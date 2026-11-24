@@ -1,5 +1,5 @@
-/* MHGU Desk PWA Service Worker — v11.4 (Network-First HTML + Offline Cache Fallback) */
-const CACHE_VERSION = 'mhgu-desk-v11.4';
+/* MHGU Desk PWA Service Worker — v11.5 (Network-First HTML + Offline Cache Fallback) */
+const CACHE_VERSION = 'mhgu-desk-v11.5';
 const CORE_ASSETS = [
   './',
   './index.html',
