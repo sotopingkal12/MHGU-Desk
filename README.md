@@ -1,12 +1,12 @@
-# MHGU Desk — Paket PWA Siap GitHub Pages
+# MHGU Desk — PWA Android (v11.0)
 
-## Cara Pasang Sekali Saja (Gratis, 2 Menit)
-1. Buat repository baru di GitHub (misal `mhgu-desk`, Public).
-2. Ekstrak ZIP ini, lalu upload seluruh file (`index.html`, `manifest.json`, `sw.js`, `icon.svg`, `icon-192.png`, `icon-512.png`) ke root repository.
-3. Masuk ke **Settings → Pages → Build and deployment → Source: Deploy from a branch (`main` / `/root`) → Save**.
-4. Tunggu ~1 menit, buka URL GitHub Pages di **Chrome Android**, lalu ketuk menu `⋮` → **Install App / Tambahkan ke Layar Utama**.
+## Cara Upload / Update ke GitHub Pages
+1. Ekstrak seluruh isi ZIP ini dan unggah **isi file-nya langsung** ke root repo `MHGU-Desk`: `index.html`, `sw.js`, `manifest.json`, `icon.svg`, `icon-192.png`, `icon-512.png`, `README.md`.
+2. Tunggu ~1 menit sampai GitHub Pages selesai deploy.
 
-## Cara Update Tanpa Build Ulang APK
-1. Setiap kali ada `index.html` versi baru, ganti `index.html` di GitHub dan naikkan `CACHE_VERSION` di baris 3 `sw.js` (misal `'mhgu-desk-v8.1'`).
-2. Buka **MHGU Desk** di Android saat online → ketuk tombol **`↻`** di pojok kanan atas → ketuk **Terapkan**.
-3. Seluruh data **Pin, Build, Progres Kurikulum, dan Skor Ujian** tetap aman tersimpan di perangkat.
+## Perubahan di v11.0
+- Penulisan ulang penuh blok CSS (`<style>`) dari nol bergaya Material 3 Android native (bersih dari konflik patch lama, 3 tema: Terang, Hangat/Sepia, AMOLED).
+- Perbaikan alignment seluruh kartu Armor, Senjata, Monster, Bahan, dan Panduan agar judul & badge rata kiri sejajar stat.
+- Tinggi Level Carousel kini dinamis mengikuti tinggi slide level aktif (bebas ruang kosong besar di bawah LV1/LV2).
+- Tombol `Bandingkan` dan aksi di dalam kartu terbuka kini berkontras jelas (`--surface` + border) dan strip aksi membungkus rapi tanpa terpotong tepi kanan.
+- Seluruh 8 database Gzip+Base64, Build Simulator, Pin/Wishlist lokal, dan Service Worker Network-First (`sw.js` v11.0) tetap utuh.
