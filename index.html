@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>MHGU Desk — Senjata, Armor &amp; Drop Rate</title>
-  <meta name="theme-color" content="#f5f3ef" id="meta-theme-color">
+  <meta name="theme-color" content="#f2f0ec" id="meta-theme-color">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -491,6 +491,184 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
 .pwa-upd-bar{position:fixed;left:12px;right:12px;bottom:72px;z-index:260;background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
 .pwa-upd-bar.hidden{display:none}
 
+
+/* === v9: MATERIAL DESIGN 3 ANDROID OVERHAUL & 60FPS ANIMATION ENGINE === */
+:root{
+  --bg:#f2f0ec;
+  --surface:#ffffff;
+  --surface-alt:#e9e5de;
+  --surface-hover:#dfd9cf;
+  --nav-bg:#fbfaf8;
+  --text:#1b1917;
+  --text-muted:#655e57;
+  --border:rgba(27,25,23,.09);
+  --accent:#b83b1d;
+  --on-accent:#ffffff;
+  --accent-soft:#fae6e0;
+  --accent-text:#922a11;
+  --shadow:0 1px 2px rgba(27,25,23,.05),0 4px 14px rgba(27,25,23,.04);
+  --shadow-lg:0 10px 30px rgba(27,25,23,.14);
+}
+:root[data-theme="sepia"]{
+  --bg:#ede4d3;
+  --surface:#faf6ee;
+  --surface-alt:#e5dac5;
+  --surface-hover:#dbd0ba;
+  --nav-bg:#f7f1e6;
+  --text:#261f18;
+  --text-muted:#6e6051;
+  --border:rgba(38,31,24,.10);
+  --accent:#8c4322;
+  --on-accent:#ffffff;
+  --accent-soft:#f0dfd4;
+  --accent-text:#6e3115;
+  --shadow:0 1px 2px rgba(38,31,24,.06),0 4px 14px rgba(38,31,24,.04);
+}
+:root[data-theme="amoled"]{
+  --bg:#000000;
+  --surface:#121418;
+  --surface-alt:#1b1f26;
+  --surface-hover:#242a33;
+  --nav-bg:#0c0e11;
+  --text:#f3f4f6;
+  --text-muted:#9ca3af;
+  --border:rgba(255,255,255,.08);
+  --accent:#f0b443;
+  --on-accent:#111317;
+  --accent-soft:rgba(240,180,67,.16);
+  --accent-text:#fcd37a;
+  --shadow:0 2px 10px rgba(0,0,0,.55);
+}
+
+/* Smooth 60fps GPU-only Animations (zero layout thrash, zero ViewTransition frame-skip) */
+@keyframes m3Enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes m3Reveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes m3Fade{from{opacity:0}to{opacity:1}}
+@keyframes m3PillPop{from{transform:scaleX(.62);opacity:.5}to{transform:scaleX(1);opacity:1}}
+.m3-enter{animation:m3Enter .22s cubic-bezier(.2,0,0,1) both}
+.m3-reveal{animation:m3Reveal .22s cubic-bezier(.2,0,0,1) both}
+.m3-fade{animation:m3Fade .16s ease-out both}
+
+/* Remove harsh double-bordered header; unified tonal top chrome */
+.topbar{background:var(--bg);border-bottom:none;padding:12px 16px 6px}
+.logo-mark{width:34px;height:34px;border-radius:11px;box-shadow:0 2px 8px rgba(184,59,29,.28)}
+.logo{font:800 17px/1.1 var(--font-sans);letter-spacing:-.02em}
+.logo-sub{font-size:11.5px;letter-spacing:.01em}
+.toolbar{background:var(--bg);border-bottom:none;padding:6px 14px 10px}
+.search-input{height:44px;border:none;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);padding:0 40px 0 16px;font-size:14px;transition:box-shadow .18s ease}
+.search-input:focus{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.icon-btn{height:40px;padding:0 14px;border-radius:999px;border:none;background:var(--surface);box-shadow:var(--shadow);font-size:12.5px;font-weight:700;transition:transform .12s ease,background-color .15s ease}
+.icon-btn:active{transform:scale(.94)}
+
+/* Material 3 Filter Chips & Sub-Controls */
+.sub-controls{margin:2px auto 0;padding:0 14px;gap:8px}
+.m-chip,.q-pill{border:none;border-radius:999px;padding:8px 14px;background:var(--surface);color:var(--text-muted);font-size:12.5px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform .12s ease,background-color .18s ease,color .18s ease}
+.m-chip.active,.q-pill.active{background:var(--accent);color:var(--on-accent);box-shadow:0 3px 10px rgba(184,59,29,.22)}
+:root[data-theme="amoled"] .m-chip.active,:root[data-theme="amoled"] .q-pill.active{box-shadow:0 3px 12px rgba(240,180,67,.22)}
+
+/* Elevated Borderless Cards (Material 3 Tonal Surface) */
+.main-wrap{margin:10px auto 0;padding:0 14px}
+.list-stack{gap:11px}
+.item-row{border:1px solid transparent;border-radius:16px;background:var(--surface);box-shadow:var(--shadow);transition:border-color .2s ease,box-shadow .2s ease;content-visibility:visible}
+:root[data-theme="amoled"] .item-row{border-color:var(--border)}
+.item-row.is-open{border-color:var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.09)}
+.row-summary{padding:14px 15px;gap:8px}
+.row-name{font:700 15.5px/1.25 var(--font-sans);letter-spacing:-.01em}
+.stat-chip,.sk-pill,.rare-badge,.cls-badge,.tag-type,.branch-badge{border-radius:8px;padding:3px 9px}
+.act-btn{border:none;border-radius:999px;min-height:36px;padding:6px 13px;background:var(--surface-alt);font-weight:700;transition:transform .12s ease,background-color .15s ease}
+.act-btn.primary{background:var(--accent);color:var(--on-accent);box-shadow:0 2px 8px rgba(184,59,29,.2)}
+.fc-chev{width:30px;height:30px;border-radius:999px;background:var(--surface-alt);transition:transform .24s cubic-bezier(.2,0,0,1),background-color .2s ease,color .2s ease}
+.row-details{padding:14px 15px;background:var(--surface-alt);border-top:none}
+.card-box,.pc,.crs-hero,.ex-card,.ex-res-banner{border:none;border-radius:16px;box-shadow:var(--shadow)}
+:root[data-theme="amoled"] .card-box,:root[data-theme="amoled"] .pc,:root[data-theme="amoled"] .crs-hero{border:1px solid var(--border)}
+
+/* Material 3 Bottom Navigation Bar with Animated Active Pill */
+.nav{border-top:none;padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+:root[data-theme="amoled"] .nav{border-top:1px solid var(--border);box-shadow:none}
+.tab-btn{min-height:54px;gap:4px;font-size:11px;font-weight:700;transition:color .18s ease}
+.tab-ic{width:64px;height:32px;border-radius:999px;transition:background-color .2s ease,transform .2s cubic-bezier(.2,0,0,1)}
+.tab-btn svg{width:21px;height:21px;stroke-width:2}
+.tab-btn.active .tab-ic{background:var(--accent-soft);animation:m3PillPop .24s cubic-bezier(.2,0,0,1) both}
+.tab-btn:active .tab-ic{transform:scale(.92)}
+
+/* Modern Bottom Sheet & Filter Drawer */
+.filter-panel{border-bottom:none;border-radius:0 0 20px 20px;box-shadow:var(--shadow-lg);animation:m3Reveal .2s cubic-bezier(.2,0,0,1) both}
+.modal-overlay{background:rgba(15,14,13,.56)}
+.modal-box{border-top:none;border-radius:24px 24px 0 0;box-shadow:0 -8px 32px rgba(0,0,0,.24)}
+.toast-box{border-radius:999px;padding:11px 18px;box-shadow:var(--shadow-lg);animation:m3Enter .2s cubic-bezier(.2,0,0,1) both}
+
+/* Segmented Hunter's Notes Tabs & Course Headers */
+.hn-tabs{border:none;border-radius:12px;padding:4px;background:var(--surface);box-shadow:var(--shadow)}
+.hn-tab{border-radius:9px}
+.hn-sec-title{border-left-width:4px;font-size:13px}
+.lv-slide{border-radius:16px;border-width:1.5px;box-shadow:var(--shadow)}
+.lv-slide.is-active{box-shadow:0 6px 18px rgba(0,0,0,.11)}
+
+/* === MHGU Desk v10: Android Native Polish, 60fps Virtualization & 3-Theme Contrast === */
+:root{--accent-glow:rgba(184,59,29,.22)}
+:root[data-theme="sepia"]{--text-muted:#5c4f41;--accent-glow:rgba(140,67,34,.22)}
+:root[data-theme="amoled"]{--accent-glow:rgba(240,180,67,.24)}
+
+body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+
+/* P0-1: Compact 1-Line Topbar (zero 2-line wrap on 360px Android) */
+.topbar{padding:10px 14px 4px;gap:8px}
+.logo-wrap{min-width:0;flex:1;gap:9px}
+.logo-mark{width:32px;height:32px;border-radius:10px;box-shadow:0 2px 8px var(--accent-glow)}
+.logo-text{min-width:0;overflow:hidden}
+.logo{font:800 16px/1.12 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-sub{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-actions{display:flex;gap:6px;align-items:center;flex:none}
+.btn-refresh{width:36px;height:36px;padding:0;justify-content:center;font-size:16px}
+.btn-theme{height:36px;padding:0 11px;font-size:12px}
+
+/* P1-1 & P1-2: Theme-adaptive Glow, Light & AMOLED Crisp Borders */
+.m-chip.active,.q-pill.active{box-shadow:0 3px 10px var(--accent-glow)}
+.act-btn.primary{box-shadow:0 2px 8px var(--accent-glow)}
+:root:not([data-theme="amoled"]) .search-input,:root:not([data-theme="amoled"]) .icon-btn{border:1px solid var(--border)}
+:root[data-theme="amoled"] .search-input,
+:root[data-theme="amoled"] .icon-btn,
+:root[data-theme="amoled"] .m-chip:not(.active),
+:root[data-theme="amoled"] .q-pill:not(.active),
+:root[data-theme="amoled"] .hn-tabs,
+:root[data-theme="amoled"] .ex-card,
+:root[data-theme="amoled"] .ex-res-banner{border:1px solid rgba(255,255,255,.1)}
+#material-lookup-modal .modal-box{border-radius:24px 24px 0 0}
+
+/* P0-5: Restore 60fps Off-Screen Virtualization (prevent frame skip on 108+ cards) */
+.item-row{content-visibility:auto;contain-intrinsic-size:auto 116px}
+.item-row.is-open{content-visibility:visible}
+@starting-style{.modal-box{transform:none;opacity:1}}
+
+/* P0-2: Clean 2-Tier Card Header (Name + Compact Actions on Row 1; Badges on Row 2) */
+.row-summary{padding:12px 14px;gap:7px}
+.row-top{align-items:flex-start;gap:8px}
+.row-title-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.row-name{font:700 15px/1.25 var(--font-sans);letter-spacing:-.01em;word-break:break-word}
+.row-meta-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.row-actions{display:flex;align-items:center;gap:5px;flex:none}
+.row-actions .act-btn{min-height:32px;height:32px;padding:0 10px;font-size:12px}
+.row-actions .act-btn.pin-ic{width:32px;padding:0;justify-content:center;font-size:14px}
+.row-actions .fc-chev{width:28px;height:28px;font-size:12px}
+.tree-chip{height:24px;min-height:24px;padding:0 8px;border-radius:999px;border:1px solid var(--border);background:var(--surface-alt);color:var(--text);font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.tree-chip:active{transform:scale(.94)}
+
+/* P0-3: Single-Row Scrollable Action & Branch Strips inside Expanded Card */
+.hbg-meta-bar{display:flex;align-items:center;gap:6px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;padding-bottom:2px;margin-bottom:8px;overscroll-behavior-x:contain}
+.hbg-meta-bar::-webkit-scrollbar{display:none}
+.hbg-meta-bar .act-btn,.hbg-meta-bar .src-link,.hbg-meta-bar .gd-cta{min-height:32px;height:32px;padding:0 11px;border-radius:999px;font-size:12px;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:4px;margin:0}
+.hbg-meta-bar .kt-badge,.hbg-meta-bar .rare-badge{flex:none;white-space:nowrap}
+.branch-links{display:flex;align-items:center;gap:6px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;padding:2px 0 4px;margin:8px 0 4px;overscroll-behavior-x:contain}
+.branch-links::-webkit-scrollbar{display:none}
+.branch-jump{flex:none;white-space:nowrap;min-height:30px;padding:4px 10px;border-radius:999px;font-size:11.5px}
+.evo-line{font-size:12px;color:var(--text-muted);margin:4px 0 6px;line-height:1.4}
+
+/* P0-4 & P2: Eliminate Empty Black Gap Under Short Level Slides + Smooth Overscroll */
+.lv-deck{margin:4px 0 8px}
+.lv-pills{overscroll-behavior-x:contain}
+.lv-carousel{align-items:flex-start;margin:0 -15px;overscroll-behavior-x:contain}
+.lv-slide{transform-origin:center top;will-change:auto;transition:transform .2s cubic-bezier(.2,0,0,1),opacity .2s ease}
+
 </style>
 </head>
 <body>
@@ -501,7 +679,7 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
     </div>
     <div class="logo-text"><b class="logo">MHGU Desk</b><span class="logo-sub">Senjata · Armor · Build</span></div>
   </div>
-  <button id="btn-theme-toggle" type="button" class="icon-btn" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App" style="margin-right:6px">↻</button><button type="button" class="theme-btn" id="theme-toggle-btn" onclick="toggleGuildTheme()" aria-label="Ganti tema">Tema: Terang</button>
+  <div class="topbar-actions"><button type="button" class="icon-btn btn-refresh" onclick="checkPwaUpdate()" aria-label="Cek Update" title="Cek Update App">↻</button><button id="btn-theme-toggle" type="button" class="icon-btn btn-theme" onclick="toggleGuildTheme()" aria-label="Ganti tema">☀ Terang</button></div>
 </header>
 <div id="toolbar" class="toolbar">
   <div class="search-row">
@@ -1250,7 +1428,15 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
       _sn = ALL_SKILL_NAMES;
     }
 
+    var _simReady = false, _pendingBuild = null;
+    function ensureSimulatorReady() {
+      if (_simReady) return;
+      _simReady = true;
+      initSimulatorSelectors();
+      if (_pendingBuild) { var pb = _pendingBuild; _pendingBuild = null; applyBuild(pb); }
+    }
     function initSimulatorSelectors() {
+      _simReady = true;
       simPiecesByPart = { Head: [], Chest: [], Arms: [], Waist: [], Legs: [] };
       for (let i = 0; i < ARMOR_DATA.length; i++) {
         const a = ARMOR_DATA[i];
@@ -1309,6 +1495,7 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
     }
 
     function setBuildClass(cls) {
+      ensureSimulatorReady();
       buildClass = cls;
       $('bcls-B').classList.toggle('active', cls === 'Blademaster');
       $('bcls-G').classList.toggle('active', cls === 'Gunner');
@@ -1318,6 +1505,7 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
     }
 
     function equipArmorToSimulator(armorId) {
+      ensureSimulatorReady();
       const a = ARMOR_DATA.find(function(x){return x.id === armorId;});
       if (!a) return;
       if (a.hunterClass === 'Blademaster' || a.hunterClass === 'Gunner') {
@@ -1336,6 +1524,7 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
     }
 
     function equipSinglePieceToSimulator(armorId, pieceIdx) {
+      ensureSimulatorReady();
       const a = ARMOR_DATA.find(function(x){return x.id === armorId;});
       if (!a || !a.pieces[pieceIdx]) return;
       const p = a.pieces[pieceIdx];
@@ -1359,6 +1548,7 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
     }
 
     function equipWeaponToSimulator(wId) {
+      ensureSimulatorReady();
       const sel = document.getElementById('sim-weapon');
       const w = findWeaponById(wId);
       if (sel && w) {
@@ -1435,8 +1625,13 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
         }
       }
 
-      const hasTalismanBoost = (skillTotals['Talisman Boost'] || 0) >= 8;
       const hasSkillDoubler = (skillTotals['Secret Arts'] || 0) >= 10;
+      if (hasSkillDoubler) {
+        Object.keys(skillTotals).forEach(function (key) {
+          if (key !== 'Secret Arts') skillTotals[key] += 2;
+        });
+      }
+      const hasTalismanBoost = (skillTotals['Talisman Boost'] || 0) >= 10;
 
       const cSk1 = (document.getElementById('sim-charm-skill1').value || '').trim();
       const cVal1 = parseInt(document.getElementById('sim-charm-val1').value || '0', 10) || 0;
@@ -1444,16 +1639,13 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
       const cVal2 = parseInt(document.getElementById('sim-charm-val2').value || '0', 10) || 0;
       const charmMult = hasTalismanBoost ? 2 : 1;
 
-      if (cSk1 && cVal1 !== 0) skillTotals[cSk1] = (skillTotals[cSk1] || 0) + (cVal1 * charmMult);
-      if (cSk2 && cVal2 !== 0) skillTotals[cSk2] = (skillTotals[cSk2] || 0) + (cVal2 * charmMult);
-
-      if (hasSkillDoubler) {
-        const allK = Object.keys(skillTotals);
-        for (let k = 0; k < allK.length; k++) {
-          const key = allK[k];
-          if (key !== 'Secret Arts' && key !== 'Talisman Boost') skillTotals[key] += 2;
-        }
-      }
+      const addCharmSkill = function (sk, val) {
+        if (!sk || val === 0) return;
+        const isNew = skillTotals[sk] === undefined;
+        skillTotals[sk] = (skillTotals[sk] || 0) + (val * charmMult) + (hasSkillDoubler && isNew && sk !== 'Secret Arts' ? 2 : 0);
+      };
+      addCharmSkill(cSk1, cVal1);
+      addCharmSkill(cSk2, cVal2);
 
       let bonusRaw = 15;
       let bonusAff = w.affinity;
@@ -1486,7 +1678,7 @@ button.sk-pill.active-sk{outline:2px solid var(--accent);outline-offset:1px}
         sharpNote = ' &bull; Sharp: <strong>' + tier + (hcPts >= 15 ? ' (+2)' : (hcPts >= 10 ? ' (+1)' : '')) + ' (' + sharpMult.toFixed(2) + 'x)</strong>';
       } else {
         if ((skillTotals['Pierce Up'] || 0) >= 10 || (skillTotals['Normal Up'] || 0) >= 10) shotMult = 1.10;
-        else if ((skillTotals['Pellet Up'] || 0) >= 10) shotMult = 1.20;
+        else if ((skillTotals['Pellet Up'] || 0) >= 10) shotMult = (w.wtype === 'bow' ? 1.30 : 1.20);
       }
 
       const clampedAff = Math.max(-100, Math.min(100, bonusAff));
@@ -1687,22 +1879,22 @@ function renderBowSnapInner(w,lvIdx){
 function lbgDetails(w){
  var c=compareHbgIds.indexOf(w.id)>-1;
  var srcBtn=w.sourceUrl?'<a class="src-link" href="'+esc(w.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Kiranico ↗</a>':'';
- var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button>'+monsterLinkBtn(w.monster)+srcBtn+'</div>';
+ var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button>'+monsterLinkBtn(w.monster)+srcBtn+guideCtaBtn('bowgun','Rapid Fire & Recoil')+'</div>';
+ h+=renderLevelCarousel(w);
  if(w.parent||(w.branches&&w.branches.length)){
   h+='<div class="branch-links">';
   if(w.parent)h+='<button type="button" class="branch-jump" data-act="jumplbg" data-k="'+esc(w.parent.parent)+'">↰ Dari '+esc(w.parent.parent)+' LV'+w.parent.fromLv+'</button>';
   if(w.branches&&w.branches.length)w.branches.forEach(function(b){h+='<button type="button" class="branch-jump" data-act="jumplbg" data-k="'+esc(b.to)+'">↳ LV'+b.fromLv+' → '+esc(b.to)+'</button>';});
   h+='</div>';
  }
- h+='<div class="sub" style="margin-bottom:6px"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="hn-note"><b>Rapid Fire:</b> [jumlah peluru / pengali %] jeda (<b>S</b> singkat → <b>XL</b> lama) · <b>Internal:</b> [isi/total] bawaan senjata.</div><div class="gd-cta-wrap">'+guideCtaBtn('bowgun','Panduan Rapid Fire, Wait Time & Recoil')+'</div>';
- h+=renderLevelCarousel(w);
+ h+='<div class="evo-line"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="hn-note"><b>Rapid Fire:</b> [jumlah / %] jeda (<b>S</b> singkat → <b>XL</b> lama) · <b>Internal:</b> [isi/total] bawaan.</div>';
  if(w.mats)h+=renderMaterialChipsHtml(w.mats);
  h+='<div class="fc-foot"><button type="button" class="act-btn" data-act="row" data-id="'+w.id+'">Tutup Kartu ▴</button></div>';
  return h;
 }
 function renderLbgRowHtml(w,fromLv,hasCh,col){
  var ex=expandedRowIds.has(w.id),rr=w.rare.replace('Rare ','');
- return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap">'+(hasCh?'<button type="button" class="act-btn" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'<span class="rare-badge r-'+rr+'">R'+rr+'</span><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span><span class="stat-chip">Aff '+esc(fmtIgAff(w.affinity,w.affChaos))+'</span><span class="stat-chip">'+esc(w.slots)+'</span></div><div class="skill-tags"><span class="sk-pill accent">RF: '+esc(w.rapidFire)+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?lbgDetails(w):'')+'</div></div>';
+ return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span><div class="row-meta-row"><span class="rare-badge r-'+rr+'">R'+rr+'</span>'+(hasCh?'<button type="button" class="tree-chip" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'</div></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span><span class="stat-chip">Aff '+esc(fmtIgAff(w.affinity,w.affChaos))+'</span><span class="stat-chip">'+esc(w.slots)+'</span></div><div class="skill-tags"><span class="sk-pill accent">RF: '+esc(w.rapidFire)+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?lbgDetails(w):'')+'</div></div>';
 }
 function jumpToLbgTree(treeName){
  var target=LBG_DATA.find(function(x){return x.baseKey===treeName;});
@@ -1719,15 +1911,15 @@ function jumpToLbgTree(treeName){
 function bowDetails(w){
  var c=compareHbgIds.indexOf(w.id)>-1;
  var srcBtn=w.sourceUrl?'<a class="src-link" href="'+esc(w.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Kiranico ↗</a>':'';
- var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button>'+monsterLinkBtn(w.monster)+srcBtn+'</div>';
+ var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button>'+monsterLinkBtn(w.monster)+srcBtn+guideCtaBtn('bow','Charge & Coating')+'</div>';
+ h+=renderLevelCarousel(w);
  if(w.parent||(w.branches&&w.branches.length)){
   h+='<div class="branch-links">';
   if(w.parent)h+='<button type="button" class="branch-jump" data-act="jumpbow" data-k="'+esc(w.parent.parent)+'">↰ Dari '+esc(w.parent.parent)+' LV'+w.parent.fromLv+'</button>';
   if(w.branches&&w.branches.length)w.branches.forEach(function(b){h+='<button type="button" class="branch-jump" data-act="jumpbow" data-k="'+esc(b.to)+'">↳ LV'+b.fromLv+' → '+esc(b.to)+'</button>';});
   h+='</div>';
  }
- h+='<div class="sub" style="margin-bottom:6px"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="hn-note"><b>Charge putus-putus</b> = terbuka dengan skill <b>Load Up</b> · <b>Coating aktif</b> = didukung · <b>tanda +</b> = efek boost · <b>dicoret</b> = tidak didukung.</div><div class="gd-cta-wrap">'+guideCtaBtn('bow','Panduan Charge 1–4, Load Up & Coating')+'</div>';
- h+=renderLevelCarousel(w);
+ h+='<div class="evo-line"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="hn-note"><b>Charge putus-putus</b> = terbuka lewat <b>Load Up</b> · <b>+</b> = boost · <b>dicoret</b> = tidak didukung.</div>';
  if(w.mats)h+=renderMaterialChipsHtml(w.mats);
  h+='<div class="fc-foot"><button type="button" class="act-btn" data-act="row" data-id="'+w.id+'">Tutup Kartu ▴</button></div>';
  return h;
@@ -1737,7 +1929,7 @@ function renderBowRowHtml(w,fromLv,hasCh,col){
  var elPill=w.elemType?'<span class="el-badge el-'+esc(w.elemType)+'">'+esc(w.elemType)+' '+w.elemVal+'</span>':'<span class="stat-chip">Raw</span>';
  var lv3=w.charges&&w.charges[2]?('Lv3 '+w.charges[2][0]+' '+w.charges[2][1]):'';
  var lv4=w.charges&&w.charges[3]&&w.charges[3][0]!=='None'?('Lv4 '+w.charges[3][0]+' '+w.charges[3][1]+(w.charges[3][2]?' (LU)':'')):'';
- return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap">'+(hasCh?'<button type="button" class="act-btn" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'<span class="rare-badge r-'+rr+'">R'+rr+'</span><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span>'+elPill+'<span class="stat-chip">Aff '+esc(fmtIgAff(w.affinity,w.affChaos))+'</span><span class="stat-chip">'+esc(w.slots)+'</span><span class="stat-chip">Arc '+esc(w.arcShot)+'</span></div><div class="skill-tags">'+(lv3?'<span class="sk-pill accent">'+esc(lv3)+'</span>':'')+(lv4?'<span class="sk-pill">'+esc(lv4)+'</span>':'')+'<span class="sub" style="font-size:11px;margin-left:2px">'+esc((w.coatings||[]).join(' · ')||'Tanpa Coating')+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?bowDetails(w):'')+'</div></div>';
+ return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span><div class="row-meta-row"><span class="rare-badge r-'+rr+'">R'+rr+'</span>'+(hasCh?'<button type="button" class="tree-chip" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'</div></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span>'+elPill+'<span class="stat-chip">Aff '+esc(fmtIgAff(w.affinity,w.affChaos))+'</span><span class="stat-chip">'+esc(w.slots)+'</span><span class="stat-chip">Arc '+esc(w.arcShot)+'</span></div><div class="skill-tags">'+(lv3?'<span class="sk-pill accent">'+esc(lv3)+'</span>':'')+(lv4?'<span class="sk-pill">'+esc(lv4)+'</span>':'')+'<span class="sub" style="font-size:11px;margin-left:2px">'+esc((w.coatings||[]).join(' · ')||'Tanpa Coating')+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?bowDetails(w):'')+'</div></div>';
 }
 function jumpToBowTree(treeName){
  var target=BOW_DATA.find(function(x){return x.baseKey===treeName;});
@@ -1850,7 +2042,7 @@ function setMonsterState(mId,idx){
  var m=MONSTER_DATA.find(function(x){return x.id===mId;});
  if(row&&m){
   var d=row.querySelector('.row-details');
-  if(d)d.innerHTML=monsterDetails(m);
+  if(d){d.innerHTML=monsterDetails(m);triggerAnim(d,'m3-fade');}
  }
 }
 function setMonsterTab(mId,tab){
@@ -1860,7 +2052,7 @@ function setMonsterTab(mId,tab){
  var m=MONSTER_DATA.find(function(x){return x.id===mId;});
  if(row&&m){
   var d=row.querySelector('.row-details');
-  if(d)d.innerHTML=monsterDetails(m);
+  if(d){d.innerHTML=monsterDetails(m);triggerAnim(d,'m3-fade');}
  }
 }
 function jumpToMonsterNote(monName){
@@ -2016,7 +2208,7 @@ function renderMonsterRowHtml(m){
  }).join(''):'<span class="stat-chip">Tanpa kelemahan elemen ≥15</span>');
  var bpTxt=m.bestPart?('<span class="stat-chip">Weakspot: <b>'+esc(m.bestPart.part)+'</b> · Slash '+m.bestPart.s+' / Impact '+m.bestPart.i+' / Shot '+m.bestPart.sh+'</span>'):'';
  var stBadge=m.hitData.length>1?('<span class="stat-chip">'+m.hitData.length+' State</span>'):'';
- return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+m.id+'"><div class="row-summary" data-act="row" data-id="'+m.id+'"><div class="row-top"><div class="row-title-wrap"><span class="rare-badge '+(m.isLarge?'r-9':'r-2')+'">'+(m.isLarge?'Large':'Small')+'</span><span class="row-name">'+esc(m.name)+'</span></div><div class="row-actions">'+stBadge+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills">'+weakHtml+bpTxt+'</div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?monsterDetails(m):'')+'</div></div>';
+ return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+m.id+'"><div class="row-summary" data-act="row" data-id="'+m.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+esc(m.name)+'</span><div class="row-meta-row"><span class="rare-badge '+(m.isLarge?'r-9':'r-2')+'">'+(m.isLarge?'Large':'Small')+'</span>'+stBadge+'</div></div><div class="row-actions"><span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills">'+weakHtml+bpTxt+'</div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?monsterDetails(m):'')+'</div></div>';
 }
 
 function renderMonstersCatalog(){
@@ -2031,7 +2223,9 @@ function renderMonstersCatalog(){
  $('item-result-count').textContent='Hunter\u2019s Notes: '+f.length+' dari '+MONSTER_DATA.length+' monster (ketuk untuk Fisiologi, Extract & Status)';
  var c=$('items-catalog-container');
  if(!f.length){c.innerHTML=emptyMsg('Tidak ada monster yang cocok. Coba ubah kata kunci atau filter.');return;}
- c.innerHTML=f.map(renderMonsterRowHtml).join('');
+ var mn=Math.min(monShown,f.length),mh='';for(var mi=0;mi<mn;mi++)mh+=renderMonsterRowHtml(f[mi]);
+ if(f.length>mn)mh+='<button type="button" class="act-btn primary more" onclick="monShown+=30;renderMonstersCatalog()">Tampilkan '+(f.length-mn)+' monster lainnya…</button>';
+ c.innerHTML=mh;
 }
 
 /* === KURIKULUM PANDUAN TERKOMPRESI (5 BAB / 15 SUB-MATERI) + UJIAN 10 SOAL === */
@@ -2274,8 +2468,8 @@ function setCarouselActiveIdx(wId,idx){
    var on=(j===idx);
    pbtns[j].classList.toggle('active',on);
    if(on){
-    var targetLeft=pbtns[j].offsetLeft-pills.offsetLeft-(pills.clientWidth-pbtns[j].offsetWidth)/2;
-    pills.scrollLeft=Math.max(0,targetLeft);
+    var targetLeft=Math.max(0,pbtns[j].offsetLeft-pills.offsetLeft-(pills.clientWidth-pbtns[j].offsetWidth)/2);
+    if(typeof pills.scrollTo==='function'){try{pills.scrollTo({left:targetLeft,behavior:'smooth'});}catch(e){pills.scrollLeft=targetLeft;}}else{pills.scrollLeft=targetLeft;}
    }
   }
  }
@@ -2348,7 +2542,8 @@ function igDetails(w){
  var devTag=w.deviantMonster?'<span class="rare-badge r-X">Deviant: '+esc(w.deviantMonster)+'</span>':'';
  var srcBtn=w.sourceUrl?'<a class="src-link" href="'+esc(w.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Kiranico ↗</a>':'';
  var c=compareHbgIds.indexOf(w.id)>-1;
- var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button><span class="kt-badge">'+esc(w.kinsectName)+' · '+esc(w.kinsectType)+'</span>'+monsterLinkBtn(w.monster||w.deviantMonster)+devTag+srcBtn+'</div>';
+ var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button><span class="kt-badge">'+esc(w.kinsectName)+' · '+esc(w.kinsectType)+'</span>'+monsterLinkBtn(w.monster||w.deviantMonster)+devTag+srcBtn+guideCtaBtn('sharpness','Sharpness')+guideCtaBtn('kinsect','Kinsect')+'</div>';
+ h+=renderLevelCarousel(w);
  if(w.parent||(w.branches&&w.branches.length)){
   h+='<div class="branch-links">';
   if(w.parent)h+='<button type="button" class="branch-jump" data-act="jumpig" data-k="'+esc(w.parent.parent)+'">↰ Dari '+esc(w.parent.parent)+' LV'+w.parent.fromLv+'</button>';
@@ -2359,8 +2554,7 @@ function igDetails(w){
   }
   h+='</div>';
  }
- h+='<div class="sub" style="margin-bottom:6px"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="hn-note"><b>Ketajaman:</b> <b>B</b> = bawaan · <b>+1 / +2</b> = tambahan skill <b>Handicraft</b> · <b>Aff A → B</b> = dual affinity Chaos Gore (normal → saat sembuh Frenzy).</div><div class="gd-cta-wrap">'+guideCtaBtn('sharpness','Panduan Sharpness & Bounce')+' '+guideCtaBtn('kinsect','Panduan Kinsect')+'</div>';
- h+=renderLevelCarousel(w);
+ h+='<div class="evo-line"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="hn-note"><b>Ketajaman:</b> <b>B</b> = bawaan · <b>+1 / +2</b> = <b>Handicraft</b> · <b>Aff A → B</b> = dual affinity Chaos Gore.</div>';
  h+=renderMaterialChipsHtml(w.mats);
  h+='<div class="fc-foot"><button type="button" class="act-btn" data-act="row" data-id="'+w.id+'">Tutup Kartu ▴</button></div>';
  return h;
@@ -2369,7 +2563,7 @@ function renderIgRowHtml(w,fromLv,hasCh,col){
  var ex=expandedRowIds.has(w.id),rr=w.rare.replace('Rare ','');
  var maxL=w.levels&&w.levels.length?w.levels[w.levels.length-1]:null;
  var elPill=w.elemType?'<span class="el-badge el-'+esc(w.elemType)+'">'+esc(w.elemType)+' '+w.elemVal+'</span>':'<span class="stat-chip">Raw</span>';
- return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap">'+(hasCh?'<button type="button" class="act-btn" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'<span class="rare-badge r-'+rr+'">R'+rr+'</span><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span>'+elPill+'<span class="stat-chip">Aff '+esc(fmtIgAff(w.affinity,w.affChaos))+'</span><span class="stat-chip">'+esc(w.slots)+'</span><span class="kt-badge">'+esc(w.kinsectType)+'</span></div>'+(maxL?'<div style="margin-top:2px">'+renderSharpnessBars(maxL.sharp,true)+'</div>':'')+'</div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?igDetails(w):'')+'</div></div>';
+ return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span><div class="row-meta-row"><span class="rare-badge r-'+rr+'">R'+rr+'</span>'+(hasCh?'<button type="button" class="tree-chip" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'</div></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span>'+elPill+'<span class="stat-chip">Aff '+esc(fmtIgAff(w.affinity,w.affChaos))+'</span><span class="stat-chip">'+esc(w.slots)+'</span><span class="kt-badge">'+esc(w.kinsectType)+'</span></div>'+(maxL?'<div style="margin-top:2px">'+renderSharpnessBars(maxL.sharp,true)+'</div>':'')+'</div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?igDetails(w):'')+'</div></div>';
 }
 function renderKinsectCatalog(q){
  var kf=$('ig-kinsect-filter').value;
@@ -2625,9 +2819,9 @@ function $(id){return document.getElementById(id);}
 const esc=escapeHtml;
 function showToast(msg){var el=$('guild-toast');el.dataset.go=/Build/.test(msg)?'1':'';el.textContent=msg+(el.dataset.go?' · ketuk untuk lihat':'');el.classList.remove('hidden');clearTimeout(window._tt);window._tt=setTimeout(function(){el.classList.add('hidden');},3200);}
 function save(k,s){try{localStorage.setItem(k,JSON.stringify(Array.from(s)));}catch(e){}}
-var THEMES=['light','sepia','amoled'],THEME_LBL={light:'Tema: Terang',sepia:'Tema: Hangat',amoled:'Tema: AMOLED'};
-function applyTheme(t){var r=document.documentElement;var cur=t||r.dataset.theme||'light';if(cur==='dark')cur='amoled';if(THEMES.indexOf(cur)===-1)cur='light';r.dataset.theme=cur;var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',cur==='amoled'?'#000000':(cur==='sepia'?'#f3ecd8':'#f5f3ef'));$('btn-theme-toggle').textContent=THEME_LBL[cur];return cur;}
-function toggleGuildTheme(){haptic(8);var cur=applyTheme(),nxt=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length];applyTheme(nxt);try{localStorage.setItem('mhgu_guild_theme',nxt);}catch(e){}showToast('Tema diubah ke '+THEME_LBL[nxt].replace('Tema: ',''));}
+var THEMES=['light','sepia','amoled'],THEME_LBL={light:'☀ Terang',sepia:'📜 Hangat',amoled:'🌙 AMOLED'};
+function applyTheme(t){var r=document.documentElement;var cur=t||r.dataset.theme||'light';if(cur==='dark')cur='amoled';if(THEMES.indexOf(cur)===-1)cur='light';r.dataset.theme=cur;var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',cur==='amoled'?'#000000':(cur==='sepia'?'#ede4d3':'#f2f0ec'));$('btn-theme-toggle').textContent=THEME_LBL[cur];return cur;}
+function toggleGuildTheme(){haptic(8);var cur=applyTheme(),nxt=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length];applyTheme(nxt);try{localStorage.setItem('mhgu_guild_theme',nxt);}catch(e){}showToast('Tema diubah ke '+THEME_LBL[nxt]);}
 function loadPersistedState(){try{var w=JSON.parse(localStorage.getItem('mhgu_guild_wishlist')||'[]');if(Array.isArray(w))wishlistIds=new Set(w);var m=JSON.parse(localStorage.getItem('mhgu_guild_matdone')||'[]');if(Array.isArray(m))matDone=new Set(m);var t=localStorage.getItem('mhgu_guild_theme');if(t)document.documentElement.dataset.theme=t;var bc=localStorage.getItem('mhgu_build_class');if(bc==='Blademaster'||bc==='Gunner')buildClass=bc;}catch(e){}applyTheme();updateWishlistBadges();}
 function updateWishlistBadges(){$('wishlist-count-top').textContent=wishlistIds.size||'';}
 function hayA(a){return a._h||(a._h=(a.name+' '+a.hunterClass+' '+a.skills+' '+a.mats+' '+a.pieces.map(function(p){return p.name+' '+p.skills+' '+(p.scrap||[]).join(' ');}).join(' ')).toLowerCase());}
@@ -2645,14 +2839,15 @@ function splitMats(s){return String(s||'').split(/,(?![^(]*\))/).map(function(x)
 
 
 function haptic(ms){try{if(navigator&&typeof navigator.vibrate==='function')navigator.vibrate(ms||10);}catch(e){}}
+function triggerAnim(el,cls){
+ if(!el)return;
+ el.classList.remove(cls);
+ requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add(cls);});});
+}
 function runViewTransition(fn){
- try{
-  if(document&&typeof document.startViewTransition==='function'&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
-   document.startViewTransition(fn);
-   return;
-  }
- }catch(e){}
  fn();
+ var sec=$('view-'+currentView);
+ triggerAnim(sec,'m3-enter');
 }
 var _overlayPushCount=0;
 function pushOverlayHistory(){
@@ -2717,6 +2912,7 @@ function switchMainView(v,noTrans){
  if(v!=='armor'&&selectedSkillChip&&$('global-search').value.trim().toLowerCase()===selectedSkillChip.toLowerCase()){selectedSkillChip='';$('global-search').value='';updateTabCounts();}
  var doSwitch=function(){
   currentView=v;
+  if(v==='build')ensureSimulatorReady();
   VIEWS.forEach(function(x){$('view-'+x).classList.toggle('hidden',x!==v);$('nav-tab-'+x).classList.toggle('active',x===v);});
   $('toolbar').classList.toggle('hidden',v==='build'||v==='wishlist');
   $('sub-controls').classList.toggle('hidden',v==='build'||v==='wishlist');
@@ -2736,10 +2932,10 @@ function switchMainView(v,noTrans){
 }
 function renderCurrent(){var v=currentView;if(v==='armor')renderArmorCatalog();else if(v==='hbg')renderHbgSection();else if(v==='items')renderItemsCatalog();else if(v==='wishlist')renderWishlistView();updateFilterBadge();}
 let _st;
-let itemsShown=50,selectedItemSrc='all';
+let itemsShown=50,monShown=30,selectedItemSrc='all';
 function selectQuickItemSrc(s){selectedItemSrc=s;$('item-cat-filter').value=s;itemsShown=50;renderQuickPillBar();renderItemsCatalog();}
-function handleGlobalSearch(){armorShown=40;itemsShown=50;var v=$('global-search').value.trim().toLowerCase();if(selectedSkillChip&&v!==selectedSkillChip.toLowerCase()){selectedSkillChip='';renderQuickPillBar();}clearTimeout(_st);_st=setTimeout(function(){renderCurrent();updateTabCounts();},150);}
-function filtersChanged(){armorShown=40;itemsShown=50;if(currentView==='items'){if(activeInfoSub==='monster'){selectedMonSize=$('mon-size-filter').value;selectedMonWeak=$('mon-weak-filter').value;}else selectedItemSrc=$('item-cat-filter').value;}renderQuickPillBar();renderCurrent();}
+function handleGlobalSearch(){armorShown=40;itemsShown=50;monShown=30;var v=$('global-search').value.trim().toLowerCase();if(selectedSkillChip&&v!==selectedSkillChip.toLowerCase()){selectedSkillChip='';renderQuickPillBar();}clearTimeout(_st);_st=setTimeout(function(){renderCurrent();updateTabCounts();},150);}
+function filtersChanged(){armorShown=40;itemsShown=50;monShown=30;if(currentView==='items'){if(activeInfoSub==='monster'){selectedMonSize=$('mon-size-filter').value;selectedMonWeak=$('mon-weak-filter').value;}else selectedItemSrc=$('item-cat-filter').value;}renderQuickPillBar();renderCurrent();}
 function toggleFilterPanel(){var fp=$('filter-panel');var willOpen=fp.classList.contains('hidden');fp.classList.toggle('hidden');if(willOpen)pushOverlayHistory();else _overlayPushCount=0;}
 function updateTabCounts(){var q=$('global-search').value.trim().toLowerCase(),c={armor:'',hbg:'',items:''};
  if(q){c.armor=ARMOR_DATA.filter(function(a){return mq(hayA(a),q);}).length;c.hbg=HBG_DATA.filter(function(w){return mq(hayH(w),q);}).length+LBG_DATA.filter(function(w){return mq(hayLBG(w),q);}).length+BOW_DATA.filter(function(w){return mq(hayBOW(w),q);}).length+IG_DATA.filter(function(w){return mq(hayIG(w),q);}).length;c.items=MONSTER_DATA.filter(function(m){return mq(hayMON(m),q);}).length+ITEMS_DATA.filter(function(i){return mq(hayI(i),q);}).length+GUIDES_DATA.filter(function(g){return mq(hayGD(g),q);}).length;}
@@ -2830,7 +3026,7 @@ function renderPieceMatChip(m){
  var clean=s.replace(/^\[Key\]\s*/i,'');
  return '<button type="button" class="mat-chip'+(isKey?' key-mat':'')+'" data-act="mat" data-q="'+esc(clean)+'">'+(isKey?'Key · ':'')+esc(clean)+'</button>';
 }
-function pinBtn(id){var on=wishlistIds.has(id);return '<button type="button" class="act-btn'+(on?' pinned':'')+'" data-act="pin" data-id="'+id+'" aria-label="Pin">'+(on?'★':'☆')+'</button>';}
+function pinBtn(id){var on=wishlistIds.has(id);return '<button type="button" class="act-btn pin-ic'+(on?' pinned':'')+'" data-act="pin" data-id="'+id+'" aria-label="Pin">'+(on?'★':'☆')+'</button>';}
 function rkBadge(r){
  if(!r)return '';
  var lbl=r==='G'?'G':(r==='H'?'HR':(r==='L'?'LR':r));
@@ -3122,16 +3318,24 @@ function jumpToHbgTree(treeName){
 }
 function toggleAllHbgDetails(){
  var reg=WEAPONS_REGISTRY[activeWeaponType]||WEAPONS_REGISTRY.hbg,list=reg.data,lbl=reg.label;
- var anyClosed=list.some(function(w){return !expandedRowIds.has(w.id);});
- list.forEach(function(w){if(anyClosed)expandedRowIds.add(w.id);else expandedRowIds.delete(w.id);});
- renderHbgSection();
- showToast(anyClosed?'Semua detail '+lbl+' dibuka':'Semua detail '+lbl+' ditutup');
+ var anyOpen=list.some(function(w){return expandedRowIds.has(w.id);});
+ if(anyOpen){
+  list.forEach(function(w){expandedRowIds.delete(w.id);});
+  renderHbgSection();
+  showToast('Semua detail '+lbl+' ditutup');
+ }else{
+  var cap=Math.min(list.length,20);
+  for(var i=0;i<cap;i++)expandedRowIds.add(list[i].id);
+  renderHbgSection();
+  showToast(cap+' kartu '+lbl+' pertama dibuka (dibatasi agar tetap mulus di Android)');
+ }
 }
 function hbgDetails(w){
  var c=compareHbgIds.indexOf(w.id)>-1;
  var devTag=w.deviantMonster?'<span class="rare-badge r-X">Deviant: '+esc(w.deviantMonster)+'</span>':'';
- var srcBtn='<a class="src-link" href="'+esc(w.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Kiranico/Wiki ↗</a>';
- var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button>'+monsterLinkBtn(w.monster||w.deviantMonster)+devTag+srcBtn+'</div>';
+ var srcBtn='<a class="src-link" href="'+esc(w.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Kiranico ↗</a>';
+ var h='<div class="hbg-meta-bar"><button type="button" class="act-btn'+(c?' pinned':'')+'" data-act="cmp" data-id="'+w.id+'">'+(c?'Batal bandingkan':'Bandingkan')+'</button>'+monsterLinkBtn(w.monster||w.deviantMonster)+devTag+srcBtn+guideCtaBtn('critdist','Crit Distance')+guideCtaBtn('hbgstyle','Style HBG')+'</div>';
+ h+=renderLevelCarousel(w);
  if(w.parent||(w.branches&&w.branches.length)){
   h+='<div class="branch-links">';
   if(w.parent)h+='<button type="button" class="branch-jump" data-act="jumphbg" data-k="'+esc(w.parent.parent)+'">↰ Dari '+esc(w.parent.parent)+' LV'+w.parent.fromLv+'</button>';
@@ -3142,21 +3346,21 @@ function hbgDetails(w){
   }
   h+='</div>';
  }
- h+='<div class="sub" style="margin-bottom:6px"><b>Evolusi:</b> '+esc(w.evo)+'</div><div class="gd-cta-wrap">'+guideCtaBtn('critdist','Crit Distance & Peluru')+' '+guideCtaBtn('hbgstyle','Adept vs Valor HBG')+'</div>';
- h+=renderLevelCarousel(w);
+ h+='<div class="evo-line"><b>Evolusi:</b> '+esc(w.evo)+'</div>';
  h+=renderMaterialChipsHtml(w.mats);
  h+='<div class="fc-foot"><button type="button" class="act-btn" data-act="row" data-id="'+w.id+'">Tutup Kartu ▴</button></div>';
  return h;
 }
 function renderArmorRowHtml(a){var ex=expandedRowIds.has(a.id);
- return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+a.id+'"><div class="row-summary" data-act="row" data-id="'+a.id+'"><div class="row-top"><div class="row-title-wrap"><span class="rare-badge r-'+a.rare+'">'+(a.rare?'R'+a.rare:'Spec')+'</span>'+classBadgeHtml(a.clsCode)+'<span class="row-name">'+esc(a.name)+'</span></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="build" data-id="'+a.id+'">+ Build</button>'+pinBtn(a.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">'+(a.kind==='set'?'Set 5':'Satuan '+a.pieceCount)+'</span><span class="stat-chip">Def '+esc(a.def)+'</span><span class="stat-chip">Slot '+a.slots+'</span><span class="stat-chip">'+esc(a.gender)+'</span></div><div class="skill-tags">'+formatSkillPillsHtml(a.skills, false)+'</div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?armorDetails(a):'')+'</div></div>';}
+ return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+a.id+'"><div class="row-summary" data-act="row" data-id="'+a.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+esc(a.name)+'</span><div class="row-meta-row"><span class="rare-badge r-'+a.rare+'">'+(a.rare?'R'+a.rare:'Spec')+'</span>'+classBadgeHtml(a.clsCode)+'</div></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="build" data-id="'+a.id+'">+ Build</button>'+pinBtn(a.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">'+(a.kind==='set'?'Set 5':'Satuan '+a.pieceCount)+'</span><span class="stat-chip">Def '+esc(a.def)+'</span><span class="stat-chip">Slot '+a.slots+'</span><span class="stat-chip">'+esc(a.gender)+'</span></div><div class="skill-tags">'+formatSkillPillsHtml(a.skills, false)+'</div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?armorDetails(a):'')+'</div></div>';}
 function renderHbgRowHtml(w,fromLv,hasCh,col){var ex=expandedRowIds.has(w.id),rr=w.rare.replace('Rare ','');
- return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap">'+(hasCh?'<button type="button" class="act-btn" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'<span class="rare-badge r-'+rr+'">R'+rr+'</span><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span><span class="stat-chip">Aff '+(w.affinity>=0?'+':'')+w.affinity+'%</span><span class="stat-chip">'+esc(w.slots)+'</span></div><div class="skill-tags"><span class="sk-pill accent">Siege: '+esc(w.siege)+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?hbgDetails(w):'')+'</div></div>';}
+ return '<div class="item-row'+(ex?' is-open':'')+'" data-row="'+w.id+'"><div class="row-summary" data-act="row" data-id="'+w.id+'"><div class="row-top"><div class="row-title-wrap"><span class="row-name">'+w.num+'. '+esc(w.tree)+'</span><div class="row-meta-row"><span class="rare-badge r-'+rr+'">R'+rr+'</span>'+(hasCh?'<button type="button" class="tree-chip" data-act="tree" data-k="'+esc(w.baseKey)+'">'+(col?'▶ +':'▼ −')+w.branches.length+'</button>':'')+(fromLv?'<span class="branch-badge">↳ LV'+fromLv+'</span>':'')+'</div></div><div class="row-actions"><button type="button" class="act-btn primary" data-act="wbuild" data-id="'+w.id+'">+ Build</button>'+pinBtn(w.id)+'<span class="fc-chev" aria-hidden="true">▾</span></div></div><div class="stat-pills"><span class="stat-chip">Raw '+esc(w.rawRange)+'</span><span class="stat-chip">Aff '+(w.affinity>=0?'+':'')+w.affinity+'%</span><span class="stat-chip">'+esc(w.slots)+'</span></div><div class="skill-tags"><span class="sk-pill accent">Siege: '+esc(w.siege)+'</span></div></div><div class="row-details'+(ex?'':' hidden')+'">'+(ex?hbgDetails(w):'')+'</div></div>';}
 function toggleRowExpand(id){var row=$('view-'+currentView).querySelector('[data-row="'+id+'"]');if(!row)return;
  var d=row.querySelector('.row-details'),open=!expandedRowIds.has(id);
  if(open){expandedRowIds.add(id);var a=ARMOR_DATA.find(function(x){return x.id===id;});if(a)d.innerHTML=armorDetails(a);else{var gd=id.indexOf('gd-')===0?GUIDES_DATA.find(function(x){return 'gd-'+x.id===id;}):null;if(gd)d.innerHTML=guideDetails(gd);else{var mon=MONSTER_DATA.find(function(x){return x.id===id;});if(mon)d.innerHTML=monsterDetails(mon);else{var w=findWeaponById(id);if(w){d.innerHTML=w.wtype==='ig'?igDetails(w):(w.wtype==='lbg'?lbgDetails(w):(w.wtype==='bow'?bowDetails(w):hbgDetails(w)));initCarouselToMax(id);}}}}}else expandedRowIds.delete(id);
  row.classList.toggle('is-open',open);
- d.classList.toggle('hidden',!open);}
+ d.classList.toggle('hidden',!open);
+ if(open)triggerAnim(d,'m3-reveal');}
 
 function renderArmorCatalog(){
  var q=$('global-search').value.trim().toLowerCase(),t=$('armor-type-filter').value,ms=parseInt($('armor-slot-filter').value,10)||0,g=$('armor-gender-filter').value,so=$('armor-sort-filter').value;
@@ -3224,7 +3428,7 @@ var PK_SKILLS_G=['Pierce Up','Normal Up','Pellet Up','Critical Up','Tenderizer',
 var PK_SKILLS_B=['Handicraft','Sharpness','Tenderizer','Critical Up','Expert','Spirit','Focus','Guard','Artillery','Hearing','Evasion','Crit Draw'];
 var builds=[],pk={p:'w',q:'',rare:'all',skill:'',n:40};
 function snapBuild(){var b={cls:buildClass,v:{},c:[$('sim-charm-skill1').value,$('sim-charm-val1').value,$('sim-charm-skill2').value,$('sim-charm-val2').value]};for(var k in SLOT_IDS)b.v[k]=$(SLOT_IDS[k]).value;return b;}
-function applyBuild(b){if(!b||!b.v)return;if(b.cls==='Blademaster'||b.cls==='Gunner'){buildClass=b.cls;$('bcls-B').classList.toggle('active',buildClass==='Blademaster');$('bcls-G').classList.toggle('active',buildClass==='Gunner');}for(var k in SLOT_IDS){var el=$(SLOT_IDS[k]),v=b.v[k];if(v&&Array.prototype.some.call(el.options,function(o){return o.value===v;}))el.value=v;}
+function applyBuild(b){if(!b||!b.v)return;ensureSimulatorReady();if(b.cls==='Blademaster'||b.cls==='Gunner'){buildClass=b.cls;$('bcls-B').classList.toggle('active',buildClass==='Blademaster');$('bcls-G').classList.toggle('active',buildClass==='Gunner');}for(var k in SLOT_IDS){var el=$(SLOT_IDS[k]),v=b.v[k];if(v&&Array.prototype.some.call(el.options,function(o){return o.value===v;}))el.value=v;}
  var ids=['sim-charm-skill1','sim-charm-val1','sim-charm-skill2','sim-charm-val2'];(b.c||[]).forEach(function(x,i){$(ids[i]).value=x;});recalculateSimulator();}
 function persistBuild(){try{localStorage.setItem('mhgu_build_current',JSON.stringify(snapBuild()));}catch(e){}}
 function renderSlots(){var h='';
@@ -3331,14 +3535,13 @@ window.addEventListener('DOMContentLoaded',async function(){
  $('bcls-B').classList.toggle('active',buildClass==='Blademaster');
  $('bcls-G').classList.toggle('active',buildClass==='Gunner');
  renderQuickPillBar();
- initSimulatorSelectors();
- if(sb)applyBuild(sb);
+ _pendingBuild=sb;
  renderBuilds();
  renderCurrent();
 });
 
-/* === PWA Service Worker & 1-Tap In-App Update === */
-var _pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
+/* === PWA Service Worker & 1-Tap In-App Auto-Update (v10.0 Network-First) === */
+var MHGU_APP_VERSION='v10.0',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
 function showPwaUpdateBanner(sw){
  _pwaWaiting=sw;
  var b=$('pwa-update-banner');
@@ -3349,34 +3552,43 @@ function applyPwaUpdate(){
  if(_pwaWaiting){_pwaWaiting.postMessage({type:'SKIP_WAITING'});}
  else{location.reload();}
 }
+function registerPwaSw(){
+ return navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(reg){
+  _pwaReg=reg;
+  if(reg.waiting)showPwaUpdateBanner(reg.waiting);
+  reg.addEventListener('updatefound',function(){
+   var nw=reg.installing;
+   if(!nw)return;
+   nw.addEventListener('statechange',function(){
+    if(nw.state==='installed'&&navigator.serviceWorker.controller){
+     showPwaUpdateBanner(nw);
+    }
+   });
+  });
+  return reg;
+ });
+}
 function checkPwaUpdate(){
  haptic(8);
  if(!('serviceWorker' in navigator)||location.protocol==='file:'){
   showToast('Mode file lokal — unggah ke GitHub Pages (HTTPS) agar update 1-tap aktif');
   return;
  }
- if(!_pwaReg){showToast('Service Worker sedang disiapkan…');return;}
- showToast('Memeriksa pembaruan MHGU Desk…');
- _pwaReg.update().then(function(){
-  if(_pwaReg.waiting){showPwaUpdateBanner(_pwaReg.waiting);}
-  else if(!_pwaReg.installing){setTimeout(function(){if(!_pwaWaiting)showToast('MHGU Desk sudah versi terbaru (v8.0)');},500);}
- }).catch(function(){showToast('Sedang offline — tidak bisa cek update sekarang');});
+ if(navigator.onLine===false){
+  showToast('Sedang offline — memakai cache '+MHGU_APP_VERSION);
+  return;
+ }
+ showToast('Menarik versi terbaru dari server…');
+ var p=_pwaReg?_pwaReg.update():registerPwaSw();
+ Promise.resolve(p).then(function(){
+  if(_pwaReg&&_pwaReg.waiting){showPwaUpdateBanner(_pwaReg.waiting);return;}
+  if(_pwaReg&&_pwaReg.installing){return;}
+  location.reload();
+ }).catch(function(){showToast('Gagal cek server — memakai cache '+MHGU_APP_VERSION);});
 }
 if('serviceWorker' in navigator&&location.protocol!=='file:'){
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js').then(function(reg){
-   _pwaReg=reg;
-   if(reg.waiting)showPwaUpdateBanner(reg.waiting);
-   reg.addEventListener('updatefound',function(){
-    var nw=reg.installing;
-    if(!nw)return;
-    nw.addEventListener('statechange',function(){
-     if(nw.state==='installed'&&navigator.serviceWorker.controller){
-      showPwaUpdateBanner(nw);
-     }
-    });
-   });
-  }).catch(function(){});
+  registerPwaSw().catch(function(){});
   navigator.serviceWorker.addEventListener('controllerchange',function(){
    if(_pwaReloading)return;
    _pwaReloading=true;

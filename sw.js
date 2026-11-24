@@ -1,6 +1,5 @@
-// MHGU Desk Service Worker — Offline-First + 1-Tap In-App Update
-// Naikkan angka versi ini setiap kali kamu upload index.html baru ke GitHub Pages!
-const CACHE_VERSION = 'mhgu-desk-v8.0';
+/* MHGU Desk PWA Service Worker — v10.0 (Network-First HTML + Offline Cache Fallback) */
+const CACHE_VERSION = 'mhgu-desk-v10.0';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -12,15 +11,17 @@ const CORE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_ASSETS))
+    caches.open(CACHE_VERSION)
+      .then((cache) => cache.addAll(CORE_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
@@ -36,16 +37,34 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  const isNav = req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html');
+  if (isNav) {
+    // Network-First: saat online langsung ambil index.html terbaru; saat offline jatuh ke cache
+    event.respondWith(
+      fetch(req, { cache: 'no-cache' })
+        .then((resp) => {
+          if (resp && resp.status === 200 && resp.type === 'basic') {
+            const clone = resp.clone();
+            caches.open(CACHE_VERSION).then((c) => c.put('./index.html', clone));
+          }
+          return resp;
+        })
+        .catch(() => caches.match('./index.html', { ignoreSearch: true }))
+    );
+    return;
+  }
+
+  // Cache-First untuk manifest & ikon statis
   event.respondWith(
-    caches.match(req).then((cached) => {
+    caches.match(req, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
       return fetch(req).then((resp) => {
         if (resp && resp.status === 200 && resp.type === 'basic') {
           const clone = resp.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(req, clone));
+          caches.open(CACHE_VERSION).then((c) => c.put(req, clone));
         }
         return resp;
-      }).catch(() => caches.match('./index.html'));
+      });
     })
   );
 });
