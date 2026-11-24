@@ -907,8 +907,7 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
 
 .lv-slide .sh-wrap { max-width: 100%; width: 100%; }
 .lv-slide .amx {
-  grid-template-columns: auto repeat(3, 16px) 4px auto repeat(2, 16px) 4px auto 16px;
-  font-size: 11px;
+  width: 100%;
   max-width: 100%;
 }
 
@@ -1041,23 +1040,26 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
 
 /* Ammo Matrix, Sharpness, Bow, LBG, Kinsect */
 .amx {
-  display: inline-grid;
-  grid-template-columns: auto repeat(3, 18px) 6px auto repeat(2, 18px) 6px auto 18px;
-  gap: 1px 3px;
+  display: grid;
+  width: 100%;
+  max-width: 340px;
+  grid-template-columns: max-content repeat(3, minmax(0, 1fr)) 4px max-content repeat(2, minmax(0, 1fr)) 4px max-content minmax(0, 1fr);
+  gap: 2px 3px;
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  line-height: 1.35;
+  font-size: clamp(10px, 2.85vw, 11.5px);
+  line-height: 1.38;
   font-variant-numeric: tabular-nums;
   background: var(--surface-alt);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 8px;
+  border-radius: 9px;
+  padding: 6px 7px;
   white-space: nowrap;
+  overflow: hidden;
 }
-.amx-k { color: var(--text-muted); font-weight: 700; text-align: left; padding-right: 2px; }
-.amx-v { text-align: right; font-weight: 700; color: var(--accent-text); }
+.amx-k { color: var(--text-muted); font-weight: 700; text-align: left; padding-right: 1px; }
+.amx-v { text-align: right; font-weight: 700; color: var(--accent-text); min-width: 0; }
 .amx-v.z { color: var(--text-muted); font-weight: 400; opacity: 0.35; }
-.amx-sp { width: 6px; }
+.amx-sp { width: 4px; }
 
 .hbg-mats-cell { font-size: 11.5px; line-height: 1.45; min-width: 0; color: var(--text-muted); text-align: left; }
 .hbg-mats-cell b { color: var(--text); }
@@ -1145,14 +1147,15 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
 .ig-submode { display: inline-flex; gap: 4px; margin-right: 6px; }
 
 .tree-branch-wrap {
-  margin: 6px 0 0 3px;
-  padding-left: 8px;
+  margin: 6px 0 0 2px;
+  padding-left: 6px;
   border-left: 2px solid var(--border-strong);
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.tree-branch-wrap .tree-branch-wrap .tree-branch-wrap .tree-branch-wrap { margin-left: 0; padding-left: 4px; }
+.tree-branch-wrap .tree-branch-wrap { margin-left: 0; padding-left: 5px; }
+.tree-branch-wrap .tree-branch-wrap .tree-branch-wrap { margin-left: 0; padding-left: 4px; border-left-style: dashed; }
 
 /* 11. HUNTER'S NOTES (MONSTERS) */
 .hn-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
@@ -1556,7 +1559,20 @@ button.sk-pill.active-sk { outline: 2px solid var(--accent); outline-offset: 1px
 @media (max-width: 720px) {
   input, select, textarea { font-size: 16px; }
 }
-@media (min-width: 760px) {
+@media (max-width: 420px) {
+  .main-wrap { padding: 0 10px; }
+  .sub-controls { padding: 0 10px; }
+  .toolbar { padding: 6px 10px 9px; }
+  .topbar { padding: 10px 10px 4px; }
+  .row-details { padding: 12px 11px 13px; }
+  .lv-carousel { margin: 0 -11px; padding: 4px 5.5% 10px; gap: 8px; }
+  .lv-slide { flex: 0 0 89%; padding: 11px; }
+  .lv-slide.pc { padding: 11px; }
+}
+@media (min-width: 700px) {
+  .lv-carousel { margin: 0 -14px; padding: 4px 14px 10px; gap: 12px; scroll-snap-type: x proximity; }
+  .lv-slide { flex: 0 0 calc(50% - 6px); max-width: 380px; scroll-snap-align: start; }
+  .amx { font-size: 11.5px; padding: 7px 9px; gap: 2px 4px; }
   .modal-overlay { align-items: center; padding: 16px; }
   .modal-box { border: 1px solid var(--border); border-radius: 20px; }
 }
@@ -4455,7 +4471,7 @@ window.addEventListener('DOMContentLoaded',async function(){
 });
 
 /* === PWA Service Worker & 1-Tap In-App Auto-Update (v10.0 Network-First) === */
-var MHGU_APP_VERSION='v11.3',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
+var MHGU_APP_VERSION='v11.4',_pwaReg=null,_pwaWaiting=null,_pwaReloading=false;
 function showPwaUpdateBanner(sw){
  _pwaWaiting=sw;
  var b=$('pwa-update-banner');
